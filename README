@@ -1,0 +1,54 @@
+           __       __              
+ ______ __/ /  ___ / /____ ______ _ 
+/ __/ // / _ \/ -_) __/ -_) __/  ' \
+\__/\_,_/_.__/\__/\__/\__/_/ /_/_/_/
+- The simple 3x3x3 solver, Mk. I -
+====================================
+This is a program that uses popular speedsolving methods such as ZZ or Roux to solve the 3x3x3 ("Rubik's") cube. It cannot solve a cube using a computer-specific algorithm such as Korf, Kociemba, or Thistlethwaite.
+The software is implemented in less than 1K SLOC of C++, and it uses simple techniques such as IDDFS to reliably solve a cube in a reasonable time (the process might take anywhere from 10 seconds to 2 minutes depending on the scramble), using the aforementioned human methods' step restrictions as heuristics. This is not professional solving software, given that it was only implemented for fun as a personal challenge, and as an exercise in minimalism.
+
+Installation instructions:
+--------------------------
+```
+$ cd cubeterm
+$ make
+$ bin/cubeterm [args...]
+```
+You may now copy the compiled executable into your $PATH, if you wish.
+
+Average solving time/movecount per method:
+------------------------------------------
+ - CFOP: ~0.3s-1min (~50ETM)
+ - ZZ:   ~1min      (~42ETM)
+ - Roux: >2min      (~30ETM)
+
+Command-line arguments:
+-----------------------
+To pass a scramble to the program, use the `-s` flag, followed by another argument which contains the moves in standard 3x3x3 notation.
+
+You may also use the `-r` CLI flag, followed by a number `n`. The program will attempt to generate a scramble using a random `n` move-long sequence.
+
+If no method is provided, ZZ will be used as the default.
+
+To use a different solving method, use the `-m` flag, followed by said method's name.
+
+If invalid arguments are provided, a help message will be displayed.
+
+Algorithm scraping:
+-------------------
+To find nicer algs, you can attempt scraping them from SpeedCubeDB, if the website's users ever find better ones.
+```
+$ cd cubeterm
+$ cd algs; ./scraper.zrc
+$ cd ..; make
+```
+
+Cube preview:
+-------------
+Cubeterm provides a small TUI-style representation of the scrambled puzzle, alongside the scramble notation, and the solution steps.
+
+Modularity:
+-----------
+The software is easy to modify and add new methods to. You typically only want to modify `src/main.cpp` or `src/alg.cpp`. To change the algs, you only have to modify the text files containing them, then recompile the program (please note that using the scraper will always reset all changes made to these files).
+
+Have fun!
