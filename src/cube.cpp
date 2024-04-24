@@ -13,7 +13,6 @@ public:
 	
 	enum Facelet : std::int_fast8_t { WHITE, ORANGE, GREEN, RED, BLUE, YELLOW };
 	enum Side    : std::int_fast8_t { U, L, F, R, B, D };
-	typedef void (Cube::*MemberFunc)();
 
 	/* Store moves as one byte each */
 	class TurnType
