@@ -5,6 +5,19 @@
 #include <utility>
 namespace alg
 {
+	struct WcComparator {
+		inline bool
+		operator()(std::string const& lhs, std::string const& rhs) const
+		{
+			auto wc_l = wc(lhs);
+			auto wc_r = wc(rhs);
+			if (wc_l == wc_r)
+				return lhs < rhs;
+
+			return wc_l < wc_r;
+		}
+	};
+
 	std::set<std::string> ZBLL = {
 		#include "../algs/ZBLLAS.txt"
 		#include "../algs/ZBLLS.txt"
@@ -17,7 +30,7 @@ namespace alg
 	std::set<std::string> CMLL = {
 		#include "../algs/CMLL.txt"
 	};
-	std::set<std::string> F2L = {
+	std::set<std::string, WcComparator> F2L = {
 		#include "../algs/F2L.txt"
 		#include "../algs/AdvancedF2L.txt"
 		"" //Pair skip
@@ -83,8 +96,8 @@ namespace alg
 	inline std::string
 	brute_force_f2l(Cube& c)
 	{
-		static std::set<std::string> AUF = { "U ", "U2 ", "U' ", " " };
-		static std::set<std::string> rotations = { "y ", "y2 ", "y' ", " " };
+		static std::set<std::string> AUF = { " ", "U ", "U' ", "U2 " };
+		static std::set<std::string> rotations = { " ", "y ", "y' ", "y2 " };
 		std::string solve;
 
 		static auto pair_count = [](Cube const& c) {
@@ -100,30 +113,30 @@ namespace alg
 			}
 			return count;
 		};
-#define BACKTRACK_F2L(P, A, R, OLD_CUBE, NEW_CUBE, STEP, STMT) \
-	for (auto& R : rotations) {\
-		for (auto& A : AUF) {\
-			for (auto& P : F2L) {\
-				Cube NEW_CUBE = OLD_CUBE;\
-				auto moves = R+A+P;\
-				NEW_CUBE.eval(moves);\
-				if (pair_count(NEW_CUBE) > pair_count(OLD_CUBE)) {\
-					solve += trim(moves)+" // "+#STEP+"\n";\
-					last_etm += wc(moves);\
-					STMT;\
-				}\
-			}\
-		}\
-	}
+#define BACKTRACK_F2L(P, A, R, OLD_CUBE, NEW_CUBE, STEP, STMT) for (auto& R : rotations) {                              \
+                                                                 for (auto& A : AUF) {                                  \
+                                                                   for (auto& P : F2L) {                                \
+                                                                     Cube NEW_CUBE = OLD_CUBE;                          \
+                                                                     auto moves = R+A+P;                                \
+                                                                     NEW_CUBE.eval(moves);                              \
+                                                                     if (pair_count(NEW_CUBE) > pair_count(OLD_CUBE)) { \
+                                                                       solve += trim(moves)+" // "+#STEP+"\n";          \
+                                                                       last_etm += wc(moves);                           \
+                                                                       STMT;                                            \
+                                                                     }                                                  \
+                                                                   }                                                    \
+                                                                 }                                                      \
+                                                               }
 		BACKTRACK_F2L(P1, A1, R1, c, copy1, F2L1,
 			BACKTRACK_F2L(P2, A2, R2, copy1, copy2, F2L2,
 				BACKTRACK_F2L(P3, A3, R3, copy2, copy3, F2L3,
 					BACKTRACK_F2L(P4, A4, R4, copy3, copy4, F2L4,
-						return solve;
+						goto _skip;
 					)
 				)
 			)
 		);
-		return "";
+_skip:
+		return solve;
 	}
 };
