@@ -208,9 +208,7 @@ namespace solve
 		// 3. CMLL
 		//--------
 		{
-			auto solve = alg::brute_force(c, alg::CMLL, alg::CLLtest, "CMLL");
-			c.eval(solve);
-			std::cout << solve;
+			std::cout << alg::brute_force(c, alg::CMLL, alg::CLLtest, "CMLL");
 		}
 
 		//-------
@@ -223,9 +221,10 @@ namespace solve
 					ms.push_back(p.first);
 			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [](Cube const& c) {
 				for (int i = 0; i < 3; ++i)
-					for (auto k : { 0, 2, 4, 5 })
-						if (c.mat[k][i][1] != c.mat[k][0][1])
-							return false;
+					for (int j = 0; j < 3; ++j)
+						for (auto k : { 0, 2, 4, 5 })
+							if (c.mat[k][i][j] != c.mat[k][0][0])
+								return false;
 				return true;
 			}), "LSE");
 			c.eval(solve);
