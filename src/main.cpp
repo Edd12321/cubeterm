@@ -380,8 +380,8 @@ sim(Cube& c)
 {
 	std::string keyboard = "\n1234567890\n"
 	                       "qwertyuiop\n"
-                         "asdfghjkl;\n"
-                         "zxcvbnm,./\n\n";
+	                       "asdfghjkl;\n"
+	                       "zxcvbnm,./\n\n";
 
 	std::cout << "\033[?25lControls:";
 	for (auto const& ch : keyboard) {

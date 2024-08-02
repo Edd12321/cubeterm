@@ -5,3 +5,6 @@ all: src/config.hpp
 
 src/config.hpp:
 	cp src/config.def.hpp $@
+
+sloc:
+	sloccount src | tee sloc.nfo
