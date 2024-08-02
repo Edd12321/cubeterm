@@ -1,5 +1,4 @@
 #!/usr/lib/zrc/bin/zrc
-rm -rf 1LLL*.txt
 set algsets = {
 	-
 	ZBLLT ZBLLU ZBLLL ZBLLH ZBLLPi ZBLLS ZBLLAS

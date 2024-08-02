@@ -32,6 +32,8 @@ If no method is provided, ZZ will be used as the default.
 
 To use a different solving method, use the `-m` flag, followed by said method's name.
 
+To run an interactive cube simulator, use `-v`.
+
 If invalid arguments are provided, a help message will be displayed.
 
 Algorithm scraping:

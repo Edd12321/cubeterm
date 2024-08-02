@@ -1,14 +1,19 @@
 #pragma GCC optimize("Ofast")
 #include <algorithm>
 #include <functional>
-#include <unistd.h>
 #include <string>
 #include <iostream>
 #include <vector>
 #include <cstring>
 #include <ctime>
 #include <chrono>
+
+#include <signal.h>
+#include <termios.h>
+#include <unistd.h>
+
 #include "cube.cpp"
+#include "config.hpp"
 #define UNKNOWN_MAX 20
 
 int last_etm;
@@ -339,7 +344,7 @@ namespace solve
 static inline void
 usage()
 {
-	std::cerr << "usage: cubeterm [-m CFOP|Roux|ZZ] -s <scramble>|-r <random_length>\n";
+	std::cerr << "usage: cubeterm [-v]|[-m CFOP|Roux|ZZ] -s <scramble>|-r <random_length>\n";
 	std::exit(EXIT_FAILURE);
 }
 
@@ -360,13 +365,64 @@ randscram(int len)
 	return s;
 }
 
+
+/* Simulator :) */
+volatile sig_atomic_t cont;
+
+static inline void
+handle_int(int x)
+{
+	cont = 1;
+}
+
+static inline void
+sim(Cube& c)
+{
+	std::string keyboard = "\n1234567890\n"
+	                       "qwertyuiop\n"
+                         "asdfghjkl;\n"
+                         "zxcvbnm,./\n\n";
+
+	std::cout << "\033[?25lControls:";
+	for (auto const& ch : keyboard) {
+		if (ch == '\n')
+			std::cout << '\n';
+		else if (sim_keys.find(ch) != sim_keys.end())
+			std::cout << "\033[1;7m" << ch << " = " << sim_keys.at(ch) << "\033[m  ";
+	}
+	
+	struct termios term, old;
+	tcgetattr(STDIN_FILENO, &term);
+	old = term;
+	term.c_lflag &= ~ICANON;
+	term.c_lflag &= ~ECHO;
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	signal(SIGINT, handle_int);
+
+	char ch;
+	for (;;) {
+		std::cout << c;
+		std::cin >> ch; ch = std::tolower(ch);
+		if (sim_keys.find(ch) != sim_keys.end())
+			c.eval(sim_keys.at(ch));
+
+		if (cont)
+			break;
+		std::cout << "\033[9A\r";
+	}
+	tcsetattr(STDIN_FILENO, TCSANOW, &old);
+	std::cout << "\033[?25h";
+	return;
+}
+
 int
 main(int argc, char *argv[])
 {
 	int opt;
-	std::string scram, method;
+	std::string scram, method = default_method;
+	bool vc = false;
 	Cube c;
-	while ((opt = getopt(argc, argv, "m:s:r:")) != -1) {
+	while ((opt = getopt(argc, argv, "m:s:r:v")) != -1) {
 		switch (opt) {
 		case 's':
 			scram = optarg;
@@ -377,23 +433,33 @@ main(int argc, char *argv[])
 		case 'r':
 			scram = randscram(std::atoi(optarg));
 			break;
+		case 'v':
+			vc = true;
+			break;
 		case '?':
 			usage();
 		}
 	}
-	if (argc < 3 || scram.empty())
-		usage();
 	c.eval(scram);
-	std::cout << "Scramble: " << scram << '\n' << c;
 
+	if (vc) {
+		sim(c);
+		return 0;
+	}
+	if (argc < 3)
+		usage();
+	
+	std::cout << "Scramble: " << scram << '\n' << c;
+	
 	using namespace std::chrono;
 	auto t1 = high_resolution_clock::now();
+
 	if (method == "CFOP")
 		solve::CFOP(c);
-	else if (method == "Roux")
+	if (method == "Roux")
 		solve::Roux(c);
-	else
-		method = "ZZ", solve::ZZ(c);
+	if (method == "ZZ")
+		solve::ZZ(c);
 
 	auto t2 = high_resolution_clock::now();
 	auto sec = duration<double>(t2-t1);
