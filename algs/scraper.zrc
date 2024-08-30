@@ -1,6 +1,5 @@
 #!/usr/lib/zrc/bin/zrc
 set algsets = {
-	-
 	ZBLLT ZBLLU ZBLLL ZBLLH ZBLLPi ZBLLS ZBLLAS
 	F2L AdvancedF2L OLL PLL
 	CMLL
@@ -8,32 +7,32 @@ set algsets = {
 
 fn deletable {
 	# AUF is determined by the actual solving algorithm
-	set ch = [ord [string index $argv(1) 0]]
+	set ch = [ord [str ${argv 1} 0]]
 	return [expr {$ch == [ord 'U'] || $ch == [ord 'y']}]
 }
 
-foreach as {*}$algsets {
+foreach as $algsets {
 	timeout 9 curl https://speedcubedb.com/a/3x3/$as \
 		| pup {li.list-group-item:first-of-type div.d-flex div text{}} \
 		| grep -v -e {^[[:blank:]]*$} \
 		| grep {^[^\:]*$} \
 		| recode html..ascii\
-		| eval {
+		| > $as.txt eval {
 			until {[read line]} {
-				let {A,wl x start end} {
+				let {wl x start end} {
 					echo $line | until {[read move -d "\n\t "]} {
-						if {[string length $move]} {
-							set wl([inc x]) = $move
+						if {[str $move len]} {
+							set {wl [inc x]} = $move
 						}
 					}
 					set start = 1 end = $x
 					for {set i = 0} {$i < 2} {inc i} {
-						if {[deletable $wl($start)]} { inc start }
-						if {[deletable $wl($end)]} { inc end -1 }
+						if {[deletable ${wl $start}]} { inc start }
+						if {[deletable ${wl $end}]} { inc end -1 }
 					}
 					echo -n \"
 					for {set i = $start} {$i <= $end} {inc i} {
-						echo -n $wl($i)
+						echo -n ${wl $i}
 						if {$i < $end} {
 							echo -n ' '
 						}
@@ -41,9 +40,5 @@ foreach as {*}$algsets {
 					echo \",
 				}
 		}
-	} > $as.txt
+	}
 }
-
-rm -f -- -.txt 
-# curl behaves strangrly
-# for some reason the first one doesn't work
