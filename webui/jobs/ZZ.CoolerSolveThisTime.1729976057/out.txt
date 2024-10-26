@@ -1,0 +1,19 @@
+Scramble: B U2 F' L2 F2 U D' U' R D' B D2 U' B' D' B2 D2 F2 D U
+      [42m  [0m[101m  [0m[107m  [0m
+      [107m  [0m[107m  [0m[107m  [0m
+      [107m  [0m[101m  [0m[107m  [0m
+[41m  [0m[42m  [0m[101m  [0m[42m  [0m[42m  [0m[44m  [0m[101m  [0m[41m  [0m[41m  [0m[44m  [0m[107m  [0m[103m  [0m
+[44m  [0m[101m  [0m[44m  [0m[101m  [0m[42m  [0m[42m  [0m[103m  [0m[41m  [0m[44m  [0m[103m  [0m[44m  [0m[107m  [0m
+[103m  [0m[41m  [0m[103m  [0m[44m  [0m[42m  [0m[42m  [0m[103m  [0m[101m  [0m[42m  [0m[107m  [0m[44m  [0m[44m  [0m
+      [101m  [0m[41m  [0m[101m  [0m
+      [103m  [0m[103m  [0m[103m  [0m
+      [41m  [0m[41m  [0m[41m  [0m
+U B U F R B' // EOLine
+R' L' U R' U R' L2 U' L U' L2 // LB
+U R' U' R' U' R2 U R' U' R // RB
+U' F U' R' U R U F' R U R2 U R2 U2 R' U // ZBLL
+
+Done! Time spent finding the solution: ~167.333s
+Method used: ZZ
+Efficiency: 43ETM
+Blasted through: 482674434 attempts

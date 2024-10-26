@@ -1,29 +1,54 @@
-/home/edward/Work/cubeterm.git/src
-Creating filelist for src
+Have a non-directory at the top, so creating directory top_dir
+Adding /home/edward/Work/cubeterm/./LICENSE to top_dir
+Adding /home/edward/Work/cubeterm/./Makefile to top_dir
+Adding /home/edward/Work/cubeterm/./README to top_dir
+Creating filelist for algs
+Creating filelist for bin
+Creating filelist for img
+Adding /home/edward/Work/cubeterm/./sloc.nfo to top_dir
+Creating filelist for webui
+Have a non-directory at the top, so creating directory src_top_dir
+Adding /home/edward/Work/cubeterm/./src/alg.cpp to src_top_dir
+Adding /home/edward/Work/cubeterm/./src/config.def.hpp to src_top_dir
+Adding /home/edward/Work/cubeterm/./src/config.hpp to src_top_dir
+Adding /home/edward/Work/cubeterm/./src/cube.cpp to src_top_dir
+Adding /home/edward/Work/cubeterm/./src/main.cpp to src_top_dir
 Categorizing files.
+WARNING! File /home/edward/Work/cubeterm/algs/scraper.zrc has unknown start: #!/usr/lib/zrc/bin/zrc
 Finding a working MD5 command....
 Found a working MD5 command.
 Computing results.
-/home/edward/.slocdata/src
+/home/edward/.slocdata/algs
+/home/edward/.slocdata/bin
+/home/edward/.slocdata/img
+/home/edward/.slocdata/src_top_dir
+/home/edward/.slocdata/top_dir
+/home/edward/.slocdata/webui
 
 
 SLOC	Directory	SLOC-by-Language (Sorted)
-771     src             cpp=771
+782     src_top_dir     cpp=782
+112     webui           php=112
+0       algs            (none)
+0       bin             (none)
+0       img             (none)
+0       top_dir         (none)
 
 
 Totals grouped by language (dominant language first):
-cpp:            771 (100.00%)
+cpp:            782 (87.47%)
+php:            112 (12.53%)
 
 
 
 
-Total Physical Source Lines of Code (SLOC)                = 771
-Development Effort Estimate, Person-Years (Person-Months) = 0.15 (1.83)
+Total Physical Source Lines of Code (SLOC)                = 894
+Development Effort Estimate, Person-Years (Person-Months) = 0.18 (2.13)
  (Basic COCOMO model, Person-Months = 2.4 * (KSLOC**1.05))
-Schedule Estimate, Years (Months)                         = 0.26 (3.14)
+Schedule Estimate, Years (Months)                         = 0.28 (3.33)
  (Basic COCOMO model, Months = 2.5 * (person-months**0.38))
-Estimated Average Number of Developers (Effort/Schedule)  = 0.58
-Total Estimated Cost to Develop                           = $ 20,561
+Estimated Average Number of Developers (Effort/Schedule)  = 0.64
+Total Estimated Cost to Develop                           = $ 24,019
  (average salary = $56,286/year, overhead = 2.40).
 SLOCCount, Copyright (C) 2001-2004 David A. Wheeler
 SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.

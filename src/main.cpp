@@ -8,6 +8,7 @@
 #include <ctime>
 #include <chrono>
 
+#include <fcntl.h>
 #include <signal.h>
 #include <termios.h>
 #include <unistd.h>
@@ -344,7 +345,7 @@ namespace solve
 static inline void
 usage()
 {
-	std::cerr << "usage: cubeterm [-v]|[-m CFOP|Roux|ZZ] -s <scramble>|-r <random_length>\n";
+	std::cerr << "usage: cubeterm [-v]|[-m CFOP|Roux|ZZ][-o <file>] -s <scramble>|-r <random_length>\n";
 	std::exit(EXIT_FAILURE);
 }
 
@@ -422,7 +423,7 @@ main(int argc, char *argv[])
 	std::string scram, method = default_method;
 	bool vc = false;
 	Cube c;
-	while ((opt = getopt(argc, argv, "m:s:r:v")) != -1) {
+	while ((opt = getopt(argc, argv, "m:s:r:vo:")) != -1) {
 		switch (opt) {
 		case 's':
 			scram = optarg;
@@ -435,6 +436,16 @@ main(int argc, char *argv[])
 			break;
 		case 'v':
 			vc = true;
+			break;
+		case 'o':
+			{
+				int fd = open(optarg, O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR);
+				if (fd < 0) {
+					perror(optarg);
+					std::exit(EXIT_FAILURE);
+				}
+				dup2(fd, STDOUT_FILENO);
+			}
 			break;
 		case '?':
 			usage();

@@ -16,6 +16,10 @@ $ bin/cubeterm [args...]
 ```
 You may now copy the compiled executable into your $PATH, if you wish.
 
+WebUI
+-----
+Cubeterm has a WebUI implemented in PHP. The default password is `password`. If you wish to change it, edit the `password.md5` file, and replace the hash with something else.
+
 Average solving time/movecount per method:
 ------------------------------------------
  - CFOP: ~0.3s-1min (~50ETM)

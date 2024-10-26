@@ -1,0 +1,38 @@
+html {
+	font-family: sans-serif;
+}
+
+.center {
+	margin: 0;
+	position: absolute;
+	top: 35%;
+	left: 50%;
+	transform: translate(-50%, 50%);
+}
+
+.method-selector {
+	display: inline-block;
+	font-weight: bold;
+}
+.method-selector img {
+	display: block;
+	vertical-align: middle;
+}
+
+.form-box {
+	background-color: #DCDCDC;
+	border: 1px solid gray;
+	padding: 5px;
+	border-radius: 3px;
+}
+
+#solves-list {
+	display: inline-flex;
+	flex-wrap: wrap;
+}
+#solves-list div {
+	margin: 5px;
+}
+.sol-view {
+	border: 1px solid black;
+}
