@@ -149,13 +149,13 @@ foreach ($solves as $solve) {
 		echo "<div class='sol-view'>";
 		echo "<pre>";
 
-		$solve = '';
+		$sl = '';
 		for ($i = 10; $i < count($out)-5; ++$i)
-			$solve .= $out[$i];
-		echo "$solve</pre>";
+			$sl .= $out[$i];
+		echo "$sl</pre>";
 
-		$solve = preg_replace("|//(.+)\n|", " ", $solve);
-		echo "<div class='cube' style='width:160px;height:179px'><script>AnimCube3(\"wca=1&initmove=y x2 $scram&move=$solve\")</script></div>";
+		$sl = preg_replace("|//(.+)\n|", " ", $sl);
+		echo "<div class='cube' style='width:160px;height:179px'><script>AnimCube3(\"wca=1&initmove=y x2 $scram&move=$sl\")</script></div>";
 		echo "</div>";
 	}
 	echo "
