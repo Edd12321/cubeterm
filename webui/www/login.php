@@ -1,10 +1,18 @@
+<?php
+include 'util.php';
+if (session_status() == PHP_SESSION_NONE)
+	session_start();
+if (isset($_SESSION["logged-in"])) {
+	header("Location: index.php");
+	exit();
+}
+?>
 <!DOCTYPE HTML>
 <html>
 <head>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
 <form action="login.php" class="center" method="post">
 <table class="form-box">
 	<tr>
@@ -19,15 +27,11 @@
 		<td><button type="submit">Login</button></td>
 	</tr>
 <?php
-include 'util.php';
-
-// Aici incepe distractia
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	if (md5($_POST["pass"]) != file("../password.md5", FILE_IGNORE_NEW_LINES)[0])
 		complain("Wrong password!");
-	session_start();
 	$_SESSION["logged-in"] = true;
-	header("Location: index.php");
+	refresh();
 }
 ?>
 </table>
