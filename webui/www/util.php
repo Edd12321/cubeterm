@@ -1,7 +1,7 @@
 <?php
 function mobile_view()
 {
-	echo "<meta name='viewport' content='initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no' />";
+	echo "<meta name='viewport' content='initial-scale=0.65,maximum-scale=0.65,minimum-scale=0.65,user-scalable=no' />";
 }
 
 function navbar()

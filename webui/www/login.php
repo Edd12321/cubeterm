@@ -22,7 +22,7 @@ navbar();
 <form action="login.php" class="center" method="post">
 <table class="form-box">
 	<tr>
-		<th><h2>Welcome to Cubeterm WebUI!</h2></th>
+		<th colspan=2><h2>Welcome to Cubeterm WebUI!</h2></th>
 	</tr><tr>
 		<td><label for="name">Name:</label></td>
 		<td><input type="text" disabled name="name" value="<?=get_current_user();?>" /></td>
