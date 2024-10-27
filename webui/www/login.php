@@ -10,9 +10,15 @@ if (isset($_SESSION["logged-in"])) {
 <!DOCTYPE HTML>
 <html>
 <head>
+<?php
+mobile_view();
+?>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+<?php
+navbar();
+?>
 <form action="login.php" class="center" method="post">
 <table class="form-box">
 	<tr>

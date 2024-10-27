@@ -1,5 +1,6 @@
-html {
+body, html {
 	font-family: sans-serif;
+	margin: 0;
 }
 
 .center {
@@ -35,4 +36,22 @@ html {
 }
 .sol-view {
 	border: 1px solid black;
+}
+
+#navbar {
+	position: fixed;
+	width: 100%;
+	list-style-type: none;
+	margin: 0;
+	margin-bottom: 10px;
+	padding: 0;
+	color: white;
+	background: blue; 
+}
+#navbar li {
+	display: inline-block;
+}
+#navbar li a {
+	padding: 5px;
+	color: white;
 }
