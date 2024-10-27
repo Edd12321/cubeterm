@@ -59,16 +59,16 @@ if (!isset($_SESSION["logged-in"])) {
 		</td>
 	</tr>
 <?php
-ob_flush();
+@ob_flush();
 flush();
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-	if ($_POST["delete"]) {
+	if (isset($_POST["delete"])) {
 		$del = $_POST["delete"];
 		$pid = file_get_contents("$del/pid.txt");
 		if (posix_getpgid($pid))
 			posix_kill($pid, SIGKILL);
-		unlink("$del/out.txt");
-		unlink("$del/pid.txt");
+		@unlink("$del/out.txt");
+		@unlink("$del/pid.txt");
 		rmdir($del);
 	} else {
 
@@ -104,8 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 			pcntl_exec($args[0], $args);
 			exit();
 		}
-		usleep(100);
-		//refresh();
+		refresh();
 	}
 }
 
