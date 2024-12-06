@@ -94,13 +94,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		if (preg_match("/[^a-z_\-0-9]/i", $name))
 			complain("Name must contain only alphanumeric chars, hyphens or underscores");
 
-		$args = [ "../../../bin/cubeterm", null, null, "-m", $method, "-o", "out.txt" ];
+		$args = [ null, null, "-m", $method, "-o", "out.txt" ];
 		if (ctype_digit($scram_len) && $scram_len > 0 && empty($scram)) {
-			$args[1] = "-r";
-			$args[2] = $scram_len;
+			$args[0] = "-r";
+			$args[1] = $scram_len;
 		} else if (!empty($scram)) {
-			$args[1] = "-s";
-			$args[2] = $scram;
+			$args[0] = "-s";
+			$args[1] = $scram;
 		} else {
 			complain("Please provide a valid scramble!");
 		}
@@ -109,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 			mkdir($dir);
 			chdir($dir);
 			file_put_contents("pid.txt", getmypid());
-			pcntl_exec($args[0], $args);
+			pcntl_exec("../../../bin/cubeterm", $args);
 			exit();
 		}
 		refresh();
