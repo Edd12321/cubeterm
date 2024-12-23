@@ -22,9 +22,9 @@ Cubeterm has a WebUI implemented in PHP. The default password is `password`. If 
 
 Average solving time/movecount per method:
 ------------------------------------------
- - CFOP: ~0.3s-1min (~50ETM)
- - ZZ:   ~1min      (~42ETM)
- - Roux: >2min      (~30ETM)
+ - CFOP: ~0.5-10    (~50ETM)
+ - ZZ:   ~7-23s     (~42ETM)
+ - Roux: ?          (~30ETM)
 
 Command-line arguments:
 -----------------------
