@@ -7,18 +7,22 @@
 #include <cstring>
 #include <ctime>
 #include <chrono>
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 #include <fcntl.h>
 #include <signal.h>
 #include <termios.h>
 #include <unistd.h>
 
+
 #include "cube.cpp"
 #include "config.hpp"
 #define UNKNOWN_MAX 20
 
 int last_etm;
-uint_fast64_t cnt;
+std::atomic<uint_fast64_t> cnt;
 typedef std::function<bool(Cube const&)> state_condition;
 typedef std::vector<Cube::TurnType> moveset;
 typedef std::vector<Cube::TurnType> moves;
@@ -71,16 +75,21 @@ trim(std::string const& str)
 
 namespace solve
 {
-	moves solution;
 	using C = Cube::TurnType::Enum;
 
+	std::thread threads[73];
+	std::atomic<bool> found_solution;
+	moves last_step_solution;
+	std::mutex mut;
+
 	static inline void
-	DLS(Cube& c, int depth, moveset& ms, state_condition const& goal, moves& curr)
+	DLS(Cube& c, int depth, moveset& ms, state_condition const& goal, moves& curr, moves& solution)
 	{
 		if (depth < 0)
 			return;
 		if (goal(c)) {
 			solution = curr;
+			found_solution = true;
 			return;
 		}
 		for (auto const& it : ms) {
@@ -90,14 +99,15 @@ namespace solve
 				if (curr.size() > 1 && it.overall_type() == curr[curr.size()-2].overall_type() && it.opposite(curr.back()))
 					continue;
 			}
-			++cnt;
 			c.do_turn(it);
 			curr.push_back(it);
-			DLS(c, depth-1, ms, goal, curr);
+			DLS(c, depth-1, ms, goal, curr, solution);
 			c.do_turn(undo_move(it));
 			curr.pop_back();
-			if (!solution.empty())
+			if (found_solution)
 				return;
+			
+			++cnt;
 		}
 	}
 
@@ -106,12 +116,29 @@ namespace solve
 	{
 		if (goal(c))
 			return {};
-		solution.clear();
-		moves curr;
-		curr.reserve(max_depth);
-		for (int i = 0; i <= max_depth; ++i)
-			DLS(c, i, ms, goal, curr);
-		return solution;
+
+		last_step_solution.clear();
+		found_solution = false;
+		for (auto const& it : ms) {
+			threads[it.value] = std::thread([&]() {
+				Cube copy = c;
+				moves solution, curr;
+
+				curr.reserve(max_depth);
+				curr.push_back(it.value);
+				copy.do_turn(it.value);
+
+				for (int i = 0; i < max_depth; ++i)
+					DLS(copy, i, ms, goal, curr, solution);
+				mut.lock();
+				if (found_solution && !solution.empty())
+					last_step_solution = solution;
+				mut.unlock();
+			});
+		}
+		for (auto const& it : ms)
+			threads[it.value].join();
+		return last_step_solution;
 	}
 
 	static inline void
