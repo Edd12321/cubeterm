@@ -113,24 +113,55 @@ namespace alg
 			}
 			return count;
 		};
-#define BACKTRACK_F2L(P, A, R, OLD_CUBE, NEW_CUBE, STEP, STMT) for (auto& R : rotations) {                              \
-                                                                 for (auto& A : AUF) {                                  \
-                                                                   for (auto& P : F2L) {                                \
-                                                                     Cube NEW_CUBE = OLD_CUBE;                          \
-                                                                     auto moves = R+A+P;                                \
-                                                                     NEW_CUBE.eval(moves);                              \
-                                                                     if (pair_count(NEW_CUBE) > pair_count(OLD_CUBE)) { \
-                                                                       solve += trim(moves)+" // "+#STEP+"\n";          \
-                                                                       last_etm += wc(moves);                           \
-                                                                       STMT;                                            \
-                                                                     }                                                  \
-                                                                   }                                                    \
-                                                                 }                                                      \
-                                                               }
-		BACKTRACK_F2L(P1, A1, R1, c, copy1, F2L1,
-			BACKTRACK_F2L(P2, A2, R2, copy1, copy2, F2L2,
-				BACKTRACK_F2L(P3, A3, R3, copy2, copy3, F2L3,
-					BACKTRACK_F2L(P4, A4, R4, copy3, copy4, F2L4,
+
+		// Display cross step not shown before
+		int pc = pair_count(c);
+		if (pc == 4)
+			std::cout << "F2L\n";
+		else {
+			for (int i = 0; i < pc; ++i)
+				std::cout << 'X';
+			std::cout << "Cross\n";
+		}
+#define BACKTRACK_F2L(OLD_CUBE, NEW_CUBE, STMT) {                                                                             \
+                                                _try_again_##OLD_CUBE:                                                        \
+                                                          bool ok = false;                                                    \
+                                                          if (pair_count(OLD_CUBE) == 4)                                      \
+                                                            goto _skip;                                                       \
+                                                          for (auto& R : rotations) {                                         \
+                                                            for (auto& A : AUF) {                                             \
+                                                              for (auto& P : F2L) {                                           \
+                                                                Cube NEW_CUBE = OLD_CUBE;                                     \
+                                                                auto moves = R+A+P;                                           \
+                                                                NEW_CUBE.eval(moves);                                         \
+                                                                int npc = pair_count(NEW_CUBE);                               \
+                                                                if (npc > pc) {                                               \
+                                                                  ok = true, pc = npc;                                        \
+                                                                  solve += trim(moves)+" // F2L" + std::to_string(pc) +"\n";  \
+                                                                  last_etm += wc(moves);                                      \
+                                                                  STMT;                                                       \
+                                                                }                                                             \
+                                                              }                                                               \
+                                                            }                                                                 \
+                                                          }                                                                   \
+                                                          /* SCDB has no algs for 2 trapped pieces in different slots */      \
+                                                          if (!ok) {                                                          \
+                                                            for (auto& R : rotations) {                                       \
+                                                              Cube NEW_CUBE = OLD_CUBE;                                       \
+                                                              auto moves = R + "R U R'";                                      \
+                                                              NEW_CUBE.eval(moves);                                           \
+                                                              if (pair_count(NEW_CUBE) == pc) {                               \
+                                                                OLD_CUBE = NEW_CUBE;                                          \
+                                                                solve += trim(moves) + ' ';                                   \
+                                                                goto _try_again_##OLD_CUBE;                                   \
+                                                              }                                                               \
+                                                            }                                                                 \
+                                                          }                                                                   \
+                                                        }
+		BACKTRACK_F2L(c, copy1,
+			BACKTRACK_F2L(copy1, copy2,
+				BACKTRACK_F2L(copy2, copy3,
+					BACKTRACK_F2L(copy3, copy4,
 						goto _skip;
 					)
 				)

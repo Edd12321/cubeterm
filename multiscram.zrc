@@ -1,0 +1,8 @@
+#!/usr/lib/zrc/bin/zrc
+clear
+while {![read scram]} {
+	if {[str $scram == "q"]} {
+		exit
+	}
+	bin/cubeterm -s $scram
+}

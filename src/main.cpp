@@ -38,13 +38,15 @@ undo_move(Cube::TurnType turn)
 }
 
 static inline std::string
-flatten(moves const& vec, std::string const& step_name = "")
+flatten(moves const& vec, std::string step_name = "")
 {
 	last_etm += vec.size();
 	std::string res;
 	for (auto it : vec)
 		res += (std::string)it + " ";
-	return res.empty() ? "" : res + "// " + step_name + "\n";
+	if (!step_name.empty())
+		step_name += "\n";
+	return res.empty() ? "" : res + "// " + step_name;
 }
 
 static inline int
@@ -163,7 +165,7 @@ namespace solve
 					if (c.mat[i][1][1] != c.mat[i][2][1])
 						return false;
 				return true;
-			}), "Cross");
+			}), ""); // Can be Cross, XCross, XXCross, etc.
 			c.eval(solve);
 			std::cout << solve;
 		}
