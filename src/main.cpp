@@ -1,5 +1,4 @@
 #pragma GCC optimize("Ofast")
-#include <algorithm>
 #include <functional>
 #include <string>
 #include <iostream>
@@ -121,7 +120,7 @@ namespace solve
 
 		last_step_solution.clear();
 		found_solution = false;
-		for (auto const& it : ms) {
+		for (auto& it : ms) {
 			threads[it.value] = std::thread([&]() {
 				Cube copy = c;
 				moves solution, curr;
@@ -138,7 +137,7 @@ namespace solve
 				mut.unlock();
 			});
 		}
-		for (auto const& it : ms)
+		for (auto& it : ms)
 			threads[it.value].join();
 		return last_step_solution;
 	}
@@ -233,7 +232,7 @@ namespace solve
 					for (int j = 0; j < 3; ++j)
 						if (c.mat[3][i][j] != c.mat[3][1][1])
 							return false;
-				return c.mat[0][1][1] == c.mat[5][1][0] || c.mat[5][1][1] == c.mat[5][1][0];
+				return true;
 			}), "SB");
 			c.eval(solve);
 			std::cout << solve;
@@ -267,6 +266,34 @@ namespace solve
 		}
 	}
 
+	// These 2 are shared between ZZ and Petrus
+	auto is_col = [](std::vector<Cube::Facelet> const& f, Cube::Facelet fl1, Cube::Facelet fl2) {
+		for (auto it : f)
+			if (it == fl1 || it == fl2)
+				return true;
+		return false;
+	};
+
+	auto solve_right_block = [](Cube& c, std::string const& step_name) {
+		moveset ms;
+		for (auto p : c.turn)
+			if (p.first.is_one_of({ C::R, C::U }))
+				ms.push_back(p.first);
+		return flatten(IDDFS(c, 14, ms, [](Cube const& c) {
+			if (c.mat[2][1][2] != c.mat[2][1][1] || c.mat[4][1][0] != c.mat[4][1][1]
+			||  c.mat[2][2][2] != c.mat[2][1][1] || c.mat[4][2][0] != c.mat[4][1][1])
+				return false;
+			for (int i = 0; i < 3; ++i)
+				if (c.mat[5][i][2] != c.mat[5][1][1])
+					return false;
+			for (int i = 1; i < 3; ++i)
+				for (int j = 0; j < 3; ++j)
+					if (c.mat[3][i][j] != c.mat[3][1][1])
+						return false;
+			return true;
+		}), step_name);
+	};
+
 	static inline void
 	ZZ(Cube& c)
 	{
@@ -279,32 +306,26 @@ namespace solve
 				if (!p.first.is_one_of({ C::M, C::S, C::E, C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
 					ms.push_back(p.first);
 			auto solve = flatten(IDDFS(c, 9, ms, [](Cube const& c) {
-			static auto is_col = [&](std::vector<Cube::Facelet> const& f, Cube::Facelet fl1, Cube::Facelet fl2) {
-					for (auto it : f)
-						if (it == fl1 || it == fl2)
-							return true;
-					return false;
-				};
 				if (c.mat[2][2][1] != c.mat[2][1][1]
 				||  c.mat[5][0][1] != c.mat[5][1][1]
 				||  c.mat[5][2][1] != c.mat[5][1][1]
 				||  c.mat[4][2][1] != c.mat[4][1][1])
 					return false; // Line is not solved;
-				if (is_col({
-					 c.mat[0][0][1], c.mat[0][1][0], c.mat[0][1][2], c.mat[0][2][1],
-					 c.mat[5][0][1], c.mat[5][1][0], c.mat[5][1][2], c.mat[5][2][1],
-					 c.mat[2][1][0], c.mat[2][1][2],
-					 c.mat[4][1][0], c.mat[4][1][2]
+			if (is_col({
+				   c.mat[0][0][1], c.mat[0][1][0], c.mat[0][1][2], c.mat[0][2][1],
+				   c.mat[5][0][1], c.mat[5][1][0], c.mat[5][1][2], c.mat[5][2][1],
+				   c.mat[2][1][0], c.mat[2][1][2],
+				   c.mat[4][1][0], c.mat[4][1][2]
 				}, c.mat[1][1][1], c.mat[3][1][1]))
 					return false; // EO: Side colour on the top, bottom or front/back two edges.
-				if (is_col({
-					 c.mat[1][0][1], c.mat[1][1][0], c.mat[1][1][2], c.mat[1][2][1],
-					 c.mat[3][0][1], c.mat[3][1][0], c.mat[3][1][2], c.mat[3][2][1],
-					 c.mat[1][0][1], c.mat[1][2][1],
-					 c.mat[4][0][1], c.mat[4][2][1]
+			if (is_col({
+				   c.mat[1][0][1], c.mat[1][1][0], c.mat[1][1][2], c.mat[1][2][1],
+		   		   c.mat[3][0][1], c.mat[3][1][0], c.mat[3][1][2], c.mat[3][2][1],
+		   		   c.mat[1][0][1], c.mat[1][2][1],
+		    	   c.mat[4][0][1], c.mat[4][2][1]
 				}, c.mat[0][1][1], c.mat[5][1][1]))
 					return false; // EO: Top or bottom colour on the side edges.
-				return true;
+			return true;
 			}), "EOLine");
 			c.eval(solve);
 			std::cout << solve;
@@ -333,23 +354,7 @@ namespace solve
 			c.eval(solve);
 			std::cout << solve;
 		} /**************** RIGHT BLOCK ****************/ {
-			moveset ms;
-			for (auto p : c.turn)
-				if (p.first.is_one_of({ C::R, C::U }))
-					ms.push_back(p.first);
-			auto solve = flatten(IDDFS(c, 14, ms, [](Cube const& c) {
-				if (c.mat[2][1][2] != c.mat[2][1][1] || c.mat[4][1][0] != c.mat[4][1][1]
-				||  c.mat[2][2][2] != c.mat[2][1][1] || c.mat[4][2][0] != c.mat[4][1][1])
-					return false;
-				for (int i = 0; i < 3; ++i)
-					if (c.mat[5][i][2] != c.mat[5][1][1])
-						return false;
-				for (int i = 1; i < 3; ++i)
-					for (int j = 0; j < 3; ++j)
-						if (c.mat[3][i][j] != c.mat[3][1][1])
-							return false;
-				return true;
-			}), "RB");
+			auto solve = solve_right_block(c, "RB");
 			c.eval(solve);
 			std::cout << solve;
 		}
@@ -369,12 +374,96 @@ namespace solve
 			}
 		}
 	}
+
+	static inline void
+	Petrus(Cube& c)
+	{
+		static auto block_2x2x2 = [](Cube const& c) {
+			return c.mat[1][1][0] == c.mat[1][1][1] && c.mat[1][2][0] == c.mat[1][1][1] && c.mat[1][2][1] == c.mat[1][1][1]
+		        && c.mat[4][1][2] == c.mat[4][1][1] && c.mat[4][2][2] == c.mat[4][1][1] && c.mat[4][2][1] == c.mat[4][1][1]
+			    && c.mat[5][1][0] == c.mat[5][1][1] && c.mat[5][2][0] == c.mat[5][1][1] && c.mat[5][2][1] == c.mat[5][1][1];
+		};	
+		static auto block_2x2x1 = [](Cube const& c) {
+			return c.mat[3][1][2] == c.mat[3][1][1] && c.mat[3][2][2] == c.mat[3][1][1] && c.mat[3][2][1] == c.mat[3][1][1]
+			    && c.mat[4][1][0] == c.mat[4][1][1] && c.mat[4][2][0] == c.mat[4][1][1]
+			    && c.mat[5][2][2] == c.mat[5][1][1] && c.mat[5][1][2] == c.mat[5][1][1];
+		};
+
+		//---------------
+		// 1. 2x2x2 (DBL)
+		//---------------
+		{
+			moveset ms;
+			for (auto p : c.turn)
+				if (!p.first.is_one_of({ C::M, C::S, C::E, C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
+					ms.push_back(p.first);
+			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, block_2x2x2), "2x2x2");
+			c.eval(solve);
+			std::cout << solve;
+		}
+
+		//---------
+		// 2. 2x2x3
+		//---------
+		{
+			moveset ms;
+			for (auto p : c.turn)
+				if (p.first.is_one_of({ C::R, C::U, C::F }))
+					ms.push_back(p.first);
+			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, block_2x2x1), "2x2x3");
+			c.eval(solve);
+			std::cout << solve;
+		}
+
+		//------
+		// 3. EO
+		//------
+		{
+			moveset ms;
+			for (auto p : c.turn)
+				if (p.first.is_one_of({ C::R, C::U, C::L, C::F }))
+					ms.push_back(p.first);
+			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [](Cube const& c) {
+				if (is_col({
+					   c.mat[0][0][1], c.mat[0][1][0], c.mat[0][1][2], c.mat[0][2][1],
+					   c.mat[1][1][2], c.mat[3][1][0], c.mat[5][0][1]
+					}, c.mat[2][1][1], c.mat[4][1][1])) // Like ZZ
+						return false;
+				if (is_col({
+					   c.mat[1][0][1], c.mat[2][0][1], c.mat[3][0][1], c.mat[4][0][1],
+					   c.mat[2][1][0], c.mat[2][1][2], c.mat[2][2][1]
+					}, c.mat[0][1][1], c.mat[5][1][1]))
+						return false;
+				return block_2x2x2(c) && block_2x2x1(c);
+			}), "EO");
+			c.eval(solve);
+			std::cout << solve;
+		}
+
+		//-------
+		// 4. F2L
+		//-------
+		{
+			c.do_turn(C::yp), std::cout << "y' ";
+			auto solve = solve_right_block(c, "F2L");
+			c.eval(solve);
+			std::cout << solve;
+		}
+
+		//-----------------
+		// 5. COLL, 4. EPLL
+		//-----------------
+		{
+			std::cout << alg::brute_force(c, alg::COLL, alg::CLLtest, "COLL");
+			std::cout << alg::brute_force(c, alg::PLL, alg::PLLtest, alg::CLLtest(c) ? "EPLL" : "PLL");
+		}
+	}
 }
 
 static inline void
 usage()
 {
-	std::cerr << "usage: cubeterm [-v]|[-m CFOP|Roux|ZZ][-o <file>] -s <scramble>|-r <random_length>\n";
+	std::cerr << "usage: cubeterm [-v]|[-m CFOP|Roux|ZZ|Petrus][-o <file>] -s <scramble>|-r <random_length>\n";
 	std::exit(EXIT_FAILURE);
 }
 
@@ -496,10 +585,12 @@ main(int argc, char *argv[])
 
 	if (method == "CFOP")
 		solve::CFOP(c);
-	if (method == "Roux")
+	else if (method == "Roux")
 		solve::Roux(c);
-	if (method == "ZZ")
+	else if (method == "ZZ")
 		solve::ZZ(c);
+	else if (method == "Petrus")
+		solve::Petrus(c);
 
 	auto t2 = high_resolution_clock::now();
 	auto sec = duration<double>(t2-t1);

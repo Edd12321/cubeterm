@@ -1,0 +1,21 @@
+Scramble: D' F2 B' D L' U D2 F D F R B U2 L2 D2 B' R' U D' U
+      [101m  [0m[44m  [0m[44m  [0m
+      [44m  [0m[107m  [0m[103m  [0m
+      [42m  [0m[107m  [0m[107m  [0m
+[42m  [0m[103m  [0m[41m  [0m[107m  [0m[42m  [0m[44m  [0m[101m  [0m[42m  [0m[103m  [0m[101m  [0m[101m  [0m[103m  [0m
+[107m  [0m[101m  [0m[42m  [0m[41m  [0m[42m  [0m[103m  [0m[41m  [0m[41m  [0m[44m  [0m[41m  [0m[44m  [0m[41m  [0m
+[44m  [0m[107m  [0m[42m  [0m[101m  [0m[42m  [0m[44m  [0m[103m  [0m[103m  [0m[103m  [0m[42m  [0m[107m  [0m[107m  [0m
+      [107m  [0m[101m  [0m[41m  [0m
+      [101m  [0m[103m  [0m[101m  [0m
+      [41m  [0m[44m  [0m[41m  [0m
+U2 D R B' U L' // 2x2x2
+U' R U' F' U F' U2 R // 2x2x3
+U R' F R // EO
+y' R U R U R U R2 U2 R2 U' R2 // F2L
+U R U R' U R U' R D R' U' R D' R2  // COLL
+U M' U' M2 U' M2 U' M' U2 M2 U' // EPLL
+
+Done! Time spent finding the solution: ~5.33401s
+Method used: Petrus
+Efficiency: 54ETM
+Blasted through: 126212219 attempts

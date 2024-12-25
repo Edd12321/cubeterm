@@ -1,0 +1,19 @@
+Scramble: B2 L D B2 U2 F' R' D2 B' R2 B R' F' D U
+      [103m  [0m[107m  [0m[101m  [0m
+      [44m  [0m[107m  [0m[41m  [0m
+      [107m  [0m[103m  [0m[101m  [0m
+[41m  [0m[107m  [0m[41m  [0m[44m  [0m[42m  [0m[107m  [0m[44m  [0m[44m  [0m[44m  [0m[103m  [0m[41m  [0m[44m  [0m
+[101m  [0m[101m  [0m[41m  [0m[42m  [0m[42m  [0m[44m  [0m[103m  [0m[41m  [0m[101m  [0m[103m  [0m[44m  [0m[44m  [0m
+[41m  [0m[107m  [0m[107m  [0m[42m  [0m[42m  [0m[42m  [0m[41m  [0m[41m  [0m[103m  [0m[101m  [0m[107m  [0m[107m  [0m
+      [101m  [0m[101m  [0m[103m  [0m
+      [101m  [0m[103m  [0m[103m  [0m
+      [42m  [0m[42m  [0m[42m  [0m
+E R U D2 B2 // FB
+M2 R U2 R r2 U R2 U2 R // SB
+U' r U' r' F R' F' R  // CMLL
+U M U M' U M' U' M U' M' U M // LSE
+
+Done! Time spent finding the solution: ~48.4151s
+Method used: Roux
+Efficiency: 34ETM
+Blasted through: 797347354 attempts

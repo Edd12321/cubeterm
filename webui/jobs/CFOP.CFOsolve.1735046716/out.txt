@@ -1,0 +1,22 @@
+Scramble: D' R2 B2 D B2 L2 R2 F D R F2 U' R2 U R2
+      [103m  [0m[107m  [0m[107m  [0m
+      [107m  [0m[107m  [0m[107m  [0m
+      [42m  [0m[44m  [0m[107m  [0m
+[41m  [0m[44m  [0m[103m  [0m[41m  [0m[41m  [0m[42m  [0m[41m  [0m[101m  [0m[101m  [0m[42m  [0m[41m  [0m[44m  [0m
+[101m  [0m[101m  [0m[42m  [0m[41m  [0m[42m  [0m[42m  [0m[103m  [0m[41m  [0m[41m  [0m[103m  [0m[44m  [0m[42m  [0m
+[101m  [0m[101m  [0m[101m  [0m[44m  [0m[44m  [0m[42m  [0m[103m  [0m[107m  [0m[41m  [0m[107m  [0m[44m  [0m[44m  [0m
+      [107m  [0m[101m  [0m[101m  [0m
+      [103m  [0m[103m  [0m[42m  [0m
+      [103m  [0m[103m  [0m[44m  [0m
+F R // Cross
+R U R' U R U R' // F2L1
+U2 f R' f' // F2L2
+y2  R S' U2 S R' // F2L3
+U R U' R' U2 R U' R' // F2L4
+U2 r U' r2 U r2 U r2 U' r  // OLL
+U R' U' R U D' R2 U R' U R U' R U' R2 D U2 // PLL
+
+Done! Time spent finding the solution: ~0.140347s
+Method used: CFOP
+Efficiency: 54ETM
+Blasted through: 14972 attempts

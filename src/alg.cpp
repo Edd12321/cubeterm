@@ -41,6 +41,9 @@ namespace alg
 	std::set<std::string> PLL = {
 		#include "../algs/PLL.txt"
 	};
+	std::set<std::string> COLL = {
+		#include "../algs/COLL.txt"
+	};
 
 	auto CLLtest = [](Cube const& c) {
 		for (auto it : { 1, 2, 3, 4 })

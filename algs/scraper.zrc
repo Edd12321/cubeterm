@@ -3,6 +3,8 @@ set algsets = {
 	ZBLLT ZBLLU ZBLLL ZBLLH ZBLLPi ZBLLS ZBLLAS
 	F2L AdvancedF2L OLL PLL
 	CMLL
+	COLL
+	-
 }
 
 fn deletable {
@@ -12,6 +14,7 @@ fn deletable {
 }
 
 foreach as $algsets {
+	rm -f $as.txt
 	timeout 9 curl https://speedcubedb.com/a/3x3/$as \
 		| pup {li.list-group-item:first-of-type div.d-flex div text{}} \
 		| grep -v -e {^[[:blank:]]*$} \

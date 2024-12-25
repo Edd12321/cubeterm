@@ -45,6 +45,10 @@ navbar();
 				<img src="res/Roux.png" />
 				<input type="radio" name="method" value="Roux" />Roux
 			</div>
+			<div class="method-selector">
+				<img src="res/Petrus.png" />
+				<input type="radio" name="method" value="Petrus" />Petrus
+			</div>
 		</td>
 	</tr>
 	<tr>
@@ -85,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		$scram_len = $_POST["scram-len"];
 		$name = $_POST["solve-name"];
 
-		if (!in_array($method, [ "ZZ", "CFOP", "Roux" ]))
+		if (!in_array($method, [ "ZZ", "CFOP", "Roux", "Petrus" ]))
 			complain("Invalid method $method!");
 		if (empty($name))
 			complain("Must provide a name!");

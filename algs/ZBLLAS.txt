@@ -11,7 +11,7 @@
 "R2 D R' U R D' R' U R' U' R U' R'",
 "R' U' R U' R' U R' D' R U R' D R2",
 "R U' R' U2 R U' R2 D' R U' R' D R",
-"R U2 R' U' F' R U R' U' R' F R2 U' R'",
+"S U2 R U2 R' U2 R' F R f'",
 "F U2 F' U' R' F U' F' U R",
 "R' U2 R' D' R U R' D R2 U' R' U2 R",
 "R U R' U R' F U' R2 U' R2 U F' U R",
