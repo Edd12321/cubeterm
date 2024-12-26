@@ -1,0 +1,20 @@
+Scramble: D2 F' B R2 L2 R2 D' B2 R' U D2 R B U' F2 B' L' F2 L R' B R U D2 F2 R2 B2 F2 U2 D
+      [41m  [0m[42m  [0m[42m  [0m
+      [44m  [0m[107m  [0m[41m  [0m
+      [103m  [0m[41m  [0m[41m  [0m
+[42m  [0m[107m  [0m[41m  [0m[42m  [0m[44m  [0m[44m  [0m[107m  [0m[42m  [0m[101m  [0m[103m  [0m[107m  [0m[107m  [0m
+[42m  [0m[101m  [0m[107m  [0m[41m  [0m[42m  [0m[44m  [0m[103m  [0m[41m  [0m[103m  [0m[41m  [0m[44m  [0m[101m  [0m
+[44m  [0m[107m  [0m[103m  [0m[44m  [0m[103m  [0m[42m  [0m[101m  [0m[42m  [0m[107m  [0m[101m  [0m[101m  [0m[41m  [0m
+      [101m  [0m[101m  [0m[107m  [0m
+      [101m  [0m[103m  [0m[103m  [0m
+      [103m  [0m[44m  [0m[44m  [0m
+F L F B2 U F B // EOPair
+F2 R U' F2 U' F2 // CPLine
+R r2 u2 R' U2 R' u2 R U r2 // Block
+U R U R U R' U2 R U R2 // F2L
+R U R' U R U' R' U R U2 R' U2 // 2GLL
+
+Done! Time spent finding the solution: ~47.0252s
+Method used: 2GR
+Efficiency: 45ETM
+Blasted through: 989914854 attempts

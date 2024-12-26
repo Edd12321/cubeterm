@@ -24,8 +24,7 @@ public:
 			M, Mp, M2, S, Sp, S2, E, Ep, E2,
 			x, xp, x2, y, yp, y2, z, zp, z2
 		} value;
-		bool
-		is_one_of(std::vector<Enum> const& turns) const
+		bool is_one_of(std::vector<Enum> const& turns) const
 		{
 			for (auto it : turns)
 				if (value-it >= 0 && value-it <= 2)
@@ -39,8 +38,7 @@ public:
 		inline bool operator>(const TurnType& t) const { return value > t.value; }
 		inline bool operator<(const TurnType& t) const { return value < t.value; }
 
-		inline bool
-		opposite(TurnType const& t2) const
+		inline bool opposite(TurnType const& t2) const
 		{
 			auto T1 = overall_type(), T2 = t2.overall_type();
 			if (T1 > T2)
@@ -195,8 +193,7 @@ Cube::~Cube()
 {
 }
 
-std::ostream&
-operator<<(std::ostream& out, const Cube& c)
+std::ostream& operator<<(std::ostream& out, const Cube& c)
 {
 	for (int i = 0; i < 3; ++i, out << '\n') {
 		out << std::string(6, ' ');
@@ -219,8 +216,7 @@ operator<<(std::ostream& out, const Cube& c)
  - Rotate 90deg clockwise
  - Rotate 90deg anticlockwise
  - Rotate 180deg */
-inline void
-Cube::rot90cw(Cube::Face& A)
+inline void Cube::rot90cw(Cube::Face& A)
 {
 	for (int j = 0; j < 2; ++j) {
 		auto elem = A[0][j];
@@ -231,8 +227,7 @@ Cube::rot90cw(Cube::Face& A)
 	}
 };
 
-inline void
-Cube::rot90acw(Cube::Face& A)
+inline void Cube::rot90acw(Cube::Face& A)
 {
 	for (int j = 0; j < 2; ++j) {
 		auto elem = A[0][j];
@@ -243,8 +238,7 @@ Cube::rot90acw(Cube::Face& A)
 	}
 }
 
-inline void
-Cube::rot180(Cube::Face& A)
+inline void Cube::rot180(Cube::Face& A)
 {
 	std::swap(A[0][0], A[2][2]);
 	std::swap(A[0][2], A[2][0]);
@@ -252,15 +246,13 @@ Cube::rot180(Cube::Face& A)
 	std::swap(A[1][0], A[1][2]);
 }
 
-inline void
-Cube::do_turn(Cube::TurnType const& t)
+inline void Cube::do_turn(Cube::TurnType const& t)
 {
 	(this->*(turn[t]))();
 }
 
 /* Evaluate a standard cube notation sequence. */
-int
-Cube::eval(std::string const& sv)
+int Cube::eval(std::string const& sv)
 {	
 	std::stringstream ss{sv};
 	std::string tmp;

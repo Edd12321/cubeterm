@@ -26,6 +26,7 @@ Average solving time/movecount per method:
  - ZZ:   ~7-23s     (~42ETM)
  - Petrus: ~6-10s   (~49ETM because COLL)
  - Roux: ?          (~30ETM)
+ - 2GR: ~10-30s     (~45ETM)
 
 Command-line arguments:
 -----------------------

@@ -72,8 +72,7 @@ namespace alg
 		return OLLtest(c) && PLLtest(c);
 	};
 
-	std::string
-	brute_force(Cube& c, std::set<std::string> const& algset, state_condition const& goal, std::string const& step_name)
+	std::string brute_force(Cube& c, std::set<std::string> const& algset, state_condition const& goal, std::string const& step_name)
 	{
 		static std::set<std::string> AUF = { "U", "U2", "U'", "" };
 		for (auto it : algset) {
@@ -96,8 +95,7 @@ namespace alg
 		return "";
 	}
 
-	inline std::string
-	brute_force_f2l(Cube& c)
+	inline std::string brute_force_f2l(Cube& c)
 	{
 		static std::set<std::string> AUF = { " ", "U ", "U' ", "U2 " };
 		static std::set<std::string> rotations = { " ", "y ", "y' ", "y2 " };
