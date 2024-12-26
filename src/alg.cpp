@@ -1,4 +1,3 @@
-#include <functional>
 #include <set>
 #include <string>
 #include <vector>
@@ -6,8 +5,7 @@
 namespace alg
 {
 	struct WcComparator {
-		inline bool
-		operator()(std::string const& lhs, std::string const& rhs) const
+		inline bool operator()(std::string const& lhs, std::string const& rhs) const
 		{
 			auto wc_l = wc(lhs);
 			auto wc_r = wc(rhs);

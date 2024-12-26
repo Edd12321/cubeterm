@@ -2,10 +2,8 @@
 #include <string>
 #include <sstream>
 #include <ostream>
-#include <iomanip>
 #include <iostream>
 #include <array>
-#include <cinttypes>
 
 class Cube
 {
