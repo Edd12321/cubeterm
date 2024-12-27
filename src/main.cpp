@@ -105,22 +105,22 @@ static inline void DLS(Cube& c, int depth, moveset const& ms, state_condition co
 	}
 }
 
-static inline moves IDDFS(Cube& c, int max_depth, moveset const& ms, state_condition const& goal, bool thread = true)
+static inline moves IDDFS(Cube& c, int max_depth, moveset const& ms, state_condition const& goal, bool thread = use_multithreading)
 {
 	if (goal(c))
 		return {};
 
 	std::atomic<bool> found_solution = false;
-	moves last_step_solution;
+	moves last_step_solution = {};
 
 	// Classic IDDFS
 	if (!thread) {
 		for (int i = 0; i < max_depth; ++i) {
 			moves solution, curr;
 			DLS(c, i, ms, goal, curr, solution, found_solution);
-			
+			if (found_solution && !solution.empty())
+				return solution;
 		}
-		return last_step_solution;
 	}
 
 	// Multithreaded IDDFS (woaj so fast)
@@ -204,7 +204,7 @@ namespace util
 
 	static auto block_2x2x2 = [](Cube const& c) {
 		return c.mat[1][1][0] == c.mat[1][1][1] && c.mat[1][2][0] == c.mat[1][1][1] && c.mat[1][2][1] == c.mat[1][1][1]
-	        && c.mat[4][1][2] == c.mat[4][1][1] && c.mat[4][2][2] == c.mat[4][1][1] && c.mat[4][2][1] == c.mat[4][1][1]
+		    && c.mat[4][1][2] == c.mat[4][1][1] && c.mat[4][2][2] == c.mat[4][1][1] && c.mat[4][2][1] == c.mat[4][1][1]
 		    && c.mat[5][1][0] == c.mat[5][1][1] && c.mat[5][2][0] == c.mat[5][1][1] && c.mat[5][2][1] == c.mat[5][1][1];
 	};	
 	static auto block_2x2x1 = [](Cube const& c) {
@@ -599,7 +599,7 @@ namespace solve
 
 void usage()
 {
-	std::cerr << "usage: cubeterm [-v]|[-m CFOP|Roux|ZZ|Petrus|2GR][-o <file>] -s <scramble>|-r <random_length>\n";
+	std::cerr << "usage: cubeterm [-v]|[-m CFOP|Roux|ZZ|Petrus|2GR][-o <file>] -s <scramble>|-r <random_length> [-t 1|0]\n";
 	std::exit(EXIT_FAILURE);
 }
 
@@ -673,7 +673,7 @@ int main(int argc, char *argv[])
 	std::string scram, method = default_method;
 	bool vc = false;
 	Cube c;
-	while ((opt = getopt(argc, argv, "m:s:r:vo:")) != -1) {
+	while ((opt = getopt(argc, argv, "m:s:r:vo:t:")) != -1) {
 		switch (opt) {
 		case 's':
 			scram = optarg;
@@ -696,6 +696,9 @@ int main(int argc, char *argv[])
 				}
 				dup2(fd, STDOUT_FILENO);
 			}
+			break;
+		case 't':
+			use_multithreading = std::atoi(optarg);
 			break;
 		case '?':
 			usage();

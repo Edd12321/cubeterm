@@ -8,3 +8,6 @@ const std::map<char, std::string> sim_keys = {
 	{ 'a', "y'" }, { 's', "D " }, { 'd', "L " }, { 'f', "U'" }, { 'g', "F'" }, { 'h', "F " }, { 'j', "U " }, { 'k', "R'" }, { 'l', "D'" }, { ';', "y " },
 	{ 'z', "d " }, { 'x', "M'" }, { 'c', "u'" }, { 'v', "l " }, { 'b', "x'" }, { 'n', "x'" }, { 'm', "r'" }, { ',', "u " }, { '.', "M'" }, { '/', "d'" },
 };
+
+/* Should CT run on multiple threads by default? (finds nodes faster, but solutions may be suboptimal */
+bool use_multithreading = true;
