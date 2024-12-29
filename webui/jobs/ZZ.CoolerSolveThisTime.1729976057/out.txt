@@ -8,12 +8,12 @@ Scramble: B U2 F' L2 F2 U D' U' R D' B D2 U' B' D' B2 D2 F2 D U
       [101m  [0m[41m  [0m[101m  [0m
       [103m  [0m[103m  [0m[103m  [0m
       [41m  [0m[41m  [0m[41m  [0m
-U B U F R B' // EOLine
-R' L' U R' U R' L2 U' L U' L2 // LB
-U R' U' R' U' R2 U R' U' R // RB
-U' F U' R' U R U F' R U R2 U R2 U2 R' U // ZBLL
+F R' U' B' L' B' // EOLine (6/6)
+L' R U2 R' U R2 L U L2 U L // LB (11/17)
+R2 U R U' R2 U2 R2 U R2 U2 R2 // RB (11/28)
+U' R2 F' R U R' U' R' F R2 U' R' U2 R2 U R' U R U // ZBLL (19/47)
 
-Done! Time spent finding the solution: ~167.333s
+Done! Time spent finding the solution: ~15.6111s
 Method used: ZZ
-Efficiency: 43ETM
-Blasted through: 482674434 attempts
+Efficiency: 47ETM
+Blasted through: 327012819 attempts

@@ -8,13 +8,13 @@ Scramble: U' L' U L F2 U R U B
       [107m  [0m[107m  [0m[44m  [0m
       [103m  [0m[103m  [0m[44m  [0m
       [101m  [0m[101m  [0m[101m  [0m
-B' R' U2 F2 // XXCross
-U R U' R' U2 R U' R' // F2L3
-U2 L' U2 L U' L' U L // F2L4
-U' F' r U R' U' r' F R  // OLL
-M2 U M U2 M' U M2  // PLL
+B' R' U2 F2 // XXCross (4/4)
+U R U' R' U2 R U' R' // F2L3 (8/12)
+U2 L' U2 L U' L' U L // F2L4 (8/20)
+U' F' r U R' U' r' F R // OLL (9/29)
+M2 U M U2 M' U M2 // PLL (7/36)
 
-Done! Time spent finding the solution: ~0.0596844s
+Done! Time spent finding the solution: ~0.0214498s
 Method used: CFOP
 Efficiency: 36ETM
-Blasted through: 201283 attempts
+Blasted through: 261547 attempts

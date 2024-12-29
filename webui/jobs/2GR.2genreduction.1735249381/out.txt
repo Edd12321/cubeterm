@@ -8,13 +8,13 @@ Scramble: D2 F' B R2 L2 R2 D' B2 R' U D2 R B U' F2 B' L' F2 L R' B R U D2 F2 R2 
       [101m  [0m[101m  [0m[107m  [0m
       [101m  [0m[103m  [0m[103m  [0m
       [103m  [0m[44m  [0m[44m  [0m
-F L F B2 U F B // EOPair
-F2 R U' F2 U' F2 // CPLine
-R r2 u2 R' U2 R' u2 R U r2 // Block
-U R U R U R' U2 R U R2 // F2L
-R U R' U R U' R' U R U2 R' U2 // 2GLL
+F L F B2 U F B // EOPair (7/7)
+U2 R' U F2 // CPLine (4/11)
+U2 r2 R u2 U r2 R U' R' u2 // Block (10/21)
+R' U' R2 U2 R U' R2 U2 R' U' R2 // F2L (11/32)
+U R U2 R' U' R U R' U' R U' R' // 2GLL (12/44)
 
-Done! Time spent finding the solution: ~47.0252s
+Done! Time spent finding the solution: ~47.9119s
 Method used: 2GR
-Efficiency: 45ETM
-Blasted through: 989914854 attempts
+Efficiency: 44ETM
+Blasted through: 919751556 attempts

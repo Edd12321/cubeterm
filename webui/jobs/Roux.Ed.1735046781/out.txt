@@ -8,12 +8,13 @@ Scramble: B2 L D B2 U2 F' R' D2 B' R2 B R' F' D U
       [101m  [0m[101m  [0m[103m  [0m
       [101m  [0m[103m  [0m[103m  [0m
       [42m  [0m[42m  [0m[42m  [0m
-E R U D2 B2 // FB
-M2 R U2 R r2 U R2 U2 R // SB
-U' r U' r' F R' F' R  // CMLL
-U M U M' U M' U' M U' M' U M // LSE
+E R U D2 B2 // FB (5/5)
+U2 R r2 U2 r2 U R // SB: SS (7/12)
+R U M' U' M U R' // SB: LP (7/19)
+U' R U R' F' R U R' U' R' F R2 U' R' // CMLL (14/33)
+M2 U M U2 M2 U M' U // LSE (8/41)
 
-Done! Time spent finding the solution: ~48.4151s
+Done! Time spent finding the solution: ~1.09735s
 Method used: Roux
-Efficiency: 34ETM
-Blasted through: 797347354 attempts
+Efficiency: 41ETM
+Blasted through: 25210973 attempts

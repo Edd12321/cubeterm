@@ -4,6 +4,7 @@
 #include <ostream>
 #include <iostream>
 #include <array>
+#include <vector>
 
 class Cube
 {
@@ -41,7 +42,8 @@ public:
 			auto T1 = overall_type(), T2 = t2.overall_type();
 			if (T1 > T2)
 				std::swap(T1, T2);
-			return (T1 == R && T2 == L) || (T1 == U && T2 == D) || (T1 == F && T2 == B);
+			return (T1 == R && T2 == L) || (T1 == U && T2 == D) || (T1 == F && T2 == B)
+			    || (T1 == R && T2 == r) || (T1 == R && T2 == M) || (T1 == r && T2 == M); // Roux
 		}
 
 		operator std::string() const
@@ -95,6 +97,7 @@ public:
 	CubeRaw mat;
 	
 	int eval(std::string const&);
+	int eval(std::vector<TurnType> const&);
 	inline void do_turn(TurnType const&);
 	friend std::ostream& operator <<(std::ostream&, const Cube&);
 	Cube();
@@ -268,4 +271,11 @@ int Cube::eval(std::string const& sv)
 		}
 	}
 	return turns;
+}
+
+int Cube::eval(std::vector<TurnType> const& m)
+{
+	for (auto const& it : m)
+		do_turn(it);
+	return m.size();
 }

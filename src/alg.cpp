@@ -70,6 +70,20 @@ namespace alg
 		return OLLtest(c) && PLLtest(c);
 	};
 
+	auto pair_count = [](Cube const& c) {
+		int count = 0;
+		for (auto it : std::vector<std::pair<int, int> >({ {1, 2}, {2, 3}, {3, 4}, {4, 1} })) {
+			auto i = it.first;
+			auto j = it.second;
+			if (c.mat[i][1][2] == c.mat[i][1][1]
+			&&  c.mat[i][2][2] == c.mat[i][1][1]
+			&&  c.mat[j][1][0] == c.mat[j][1][1]
+			&&  c.mat[j][2][0] == c.mat[j][1][1])
+				++count;
+		}
+		return count;
+	};
+
 	std::string brute_force(Cube& c, std::set<std::string> const& algset, state_condition const& goal, std::string const& step_name)
 	{
 		static std::set<std::string> AUF = { "U", "U2", "U'", "" };
@@ -83,7 +97,7 @@ namespace alg
 					last_etm += moves;
 					if (goal(bak)) {
 						c = bak;
-						return alg_w_auf + " // " + step_name+"\n";
+						return flatten(alg_w_auf, step_name);
 					}
 					last_etm -= moves;
 				}
@@ -98,30 +112,7 @@ namespace alg
 		static std::set<std::string> AUF = { " ", "U ", "U' ", "U2 " };
 		static std::set<std::string> rotations = { " ", "y ", "y' ", "y2 " };
 		std::string solve;
-
-		static auto pair_count = [](Cube const& c) {
-			int count = 0;
-			for (auto it : std::vector<std::pair<int, int> >({ {1, 2}, {2, 3}, {3, 4}, {4, 1} })) {
-				auto i = it.first;
-				auto j = it.second;
-				if (c.mat[i][1][2] == c.mat[i][1][1]
-				&&  c.mat[i][2][2] == c.mat[i][1][1]
-				&&  c.mat[j][1][0] == c.mat[j][1][1]
-				&&  c.mat[j][2][0] == c.mat[j][1][1])
-					++count;
-			}
-			return count;
-		};
-
-		// Display cross step not shown before
 		int pc = pair_count(c);
-		if (pc == 4)
-			std::cout << "F2L\n";
-		else {
-			for (int i = 0; i < pc; ++i)
-				std::cout << 'X';
-			std::cout << "Cross\n";
-		}
 #define BACKTRACK_F2L(OLD_CUBE, NEW_CUBE, STMT) {                                                                             \
                                                 _try_again_##OLD_CUBE:                                                        \
                                                           bool ok = false;                                                    \
@@ -136,8 +127,8 @@ namespace alg
                                                                 int npc = pair_count(NEW_CUBE);                               \
                                                                 if (npc > pc) {                                               \
                                                                   ok = true, pc = npc;                                        \
-                                                                  solve += trim(moves)+" // F2L" + std::to_string(pc) +"\n";  \
                                                                   last_etm += wc(moves);                                      \
+                                                                  solve += flatten(moves, "F2L"+std::to_string(npc));         \
                                                                   STMT;                                                       \
                                                                 }                                                             \
                                                               }                                                               \
@@ -151,7 +142,8 @@ namespace alg
                                                               NEW_CUBE.eval(moves);                                           \
                                                               if (pair_count(NEW_CUBE) == pc) {                               \
                                                                 OLD_CUBE = NEW_CUBE;                                          \
-                                                                solve += trim(moves) + ' ';                                   \
+                                                                last_etm += wc(moves);                                        \
+                                                                solve += moves + ' ';                                         \
                                                                 goto _try_again_##OLD_CUBE;                                   \
                                                               }                                                               \
                                                             }                                                                 \

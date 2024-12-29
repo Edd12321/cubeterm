@@ -43,9 +43,22 @@ std::string flatten(moves const& vec, std::string step_name = "", bool count = t
 	std::string res;
 	for (auto it : vec)
 		res += (std::string)it + " ";
-	if (!step_name.empty())
-		step_name += "\n";
-	return res.empty() ? "" : res + "// " + step_name;
+	if (res.empty())
+		return "";
+	std::string ret;
+	ret += res + "// " + step_name + " ";
+	ret += "(" + std::to_string(vec.size());
+	ret += "/" + std::to_string(last_etm) + ")\n";
+	return ret;
+}
+
+std::string flatten(std::string str, std::string step_name = "", bool count = false)
+{
+	std::stringstream ss{str};
+	moves vec;
+	while (ss >> str)
+		vec.push_back(str);
+	return flatten(vec, step_name, count);
 }
 
 int wc(std::string str)
@@ -55,19 +68,6 @@ int wc(std::string str)
 	while (ss >> str)
 		++count;
 	return count;
-}
-
-std::string trim(std::string const& str)
-{
-	bool ok = false;
-	std::string result;
-	for (auto ch : str) {
-		if (!isspace(ch))
-			ok = true;
-		if (ok)
-			result += ch;
-	}
-	return result;
 }
 
 #include "alg.cpp"
@@ -233,7 +233,7 @@ namespace solve
 			for (auto p : c.turn)
 				if (!p.first.is_one_of({ C::M, C::S, C::E, C::r, C::l, C::u, C::d, C::f, C::b, C::x, C::y, C::z }))
 					ms.push_back(p.first);
-			auto solve = flatten(IDDFS(c, 8, ms, [](Cube const& c) {
+			auto solve = IDDFS(c, 8, ms, [](Cube const& c) {
 				if (c.mat[5][0][1] != c.mat[5][1][0]
 				||  c.mat[5][1][0] != c.mat[5][1][2]
 				||  c.mat[5][1][2] != c.mat[5][2][1]
@@ -244,9 +244,21 @@ namespace solve
 					if (c.mat[i][1][1] != c.mat[i][2][1])
 						return false;
 				return true;
-			}), ""); // Can be Cross, XCross, XXCross, etc.
+			});
 			c.eval(solve);
-			std::cout << solve;
+
+			int pc = alg::pair_count(c);
+			std::string cross_string;
+
+			// Check for XCrosses
+			if (pc == 4)
+				cross_string = "F2L";
+			else {
+				for (int i = 0; i < pc; ++i)
+					cross_string += 'X';
+				cross_string += "Cross";
+			}
+			std::cout << flatten(solve, cross_string);
 		}
 
 		//-------
@@ -269,14 +281,14 @@ namespace solve
 
 	static inline void Roux(Cube& c)
 	{
-		//---------------
-		// 1. First block
-		//---------------
+		//------
+		// 1. FB
+		//------
 		{
 			moveset ms;
 			for (auto p : c.turn)
-			if (!p.first.is_one_of({ C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
-				ms.push_back(p.first);
+				if (!p.first.is_one_of({ /*C::M, C::S, C::E,*/ C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
+					ms.push_back(p.first);
 			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [](Cube const& c) {
 				if (c.mat[2][1][0] != c.mat[2][2][0] || c.mat[4][1][2] != c.mat[4][2][2])
 					return false;
@@ -294,27 +306,42 @@ namespace solve
 		}
 
 		//----------------
-		// 2. Second block
+		// 2. SB (SS + LP)
 		//----------------
 		{
 			moveset ms;
 			for (auto p : c.turn)
 				if (p.first.is_one_of({ C::R, C::r, C::U, C::M }))
 					ms.push_back(p.first);
-			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [](Cube const& c) {
-				if (c.mat[2][1][2] != c.mat[2][2][2] || c.mat[4][1][0] != c.mat[4][2][0])
-					return false;
-				for (int i = 0; i < 3; ++i)
-					if (c.mat[5][i][2] != c.mat[5][1][0])
-						return false;
-				for (int i = 1; i < 3; ++i)
-					for (int j = 0; j < 3; ++j)
-						if (c.mat[3][i][j] != c.mat[3][1][1])
-							return false;
+			auto solve_1x2x2 = [](Cube const& c) {
+				if (c.mat[3][1][1] != c.mat[3][1][2] || c.mat[3][1][1] != c.mat[3][2][1] || c.mat[3][1][1] != c.mat[3][2][2])
+					return false; // Side
+				if (c.mat[4][1][0] != c.mat[4][1][2] || c.mat[4][2][0] != c.mat[4][1][2])
+					return false; // Back
+				if (c.mat[5][2][2] != c.mat[5][2][0] || c.mat[5][1][2] != c.mat[5][2][0])
+					return false; // Bottom
 				return true;
-			}), "SB");
-			c.eval(solve);
-			std::cout << solve;
+			};
+			auto solve_1x1x2 = [](Cube const& c) {
+				if (c.mat[3][1][0] != c.mat[3][1][1])
+					return false; // Side
+				if (c.mat[2][1][2] != c.mat[2][1][0] || c.mat[2][2][2] != c.mat[2][1][0])
+					return false; // Front
+				if (c.mat[5][0][2] != c.mat[5][0][0])
+					return false; // Bottom
+				return true;
+			};
+			auto part1 = flatten(IDDFS(c, UNKNOWN_MAX, ms, [&](Cube const& c) {
+				return solve_1x2x2(c);
+			}), "SB: SS");
+			c.eval(part1);
+			std::cout << part1;
+			auto part2 = flatten(IDDFS(c, UNKNOWN_MAX, ms, [&](Cube const& c) {
+				return solve_1x1x2(c) && solve_1x2x2(c);
+			}), "SB: LP");
+			c.eval(part2);
+			std::cout << part2;
+
 		}
 
 		//--------
@@ -336,7 +363,7 @@ namespace solve
 				for (int i = 0; i < 3; ++i)
 					for (int j = 0; j < 3; ++j)
 						for (auto k : { 0, 2, 4, 5 })
-							if (c.mat[k][i][j] != c.mat[k][0][0])
+							if (c.mat[k][i][j] != c.mat[k][1][0])
 								return false;
 				return true;
 			}), "LSE");
@@ -526,7 +553,7 @@ namespace solve
 				for (auto p : c.turn)
 					if (p.first.is_one_of({ C::R, C::U }))
 						ms.push_back(p.first);
-				auto solve = flatten(IDDFS(copy, UNKNOWN_MAX,  ms, corn_check, false) , "", 0);
+				auto solve = flatten(IDDFS(copy, UNKNOWN_MAX,  ms, corn_check, false), "", 0);
 				copy.eval(solve);
 				if (!corn_check(copy))
 					return false;
