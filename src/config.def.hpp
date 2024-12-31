@@ -1,5 +1,5 @@
 /* Which method to solve with */
-const std::string default_method = "ZZ";
+const char *default_method = "ZZ";
 
 /* By default, these are the same bindings as csTimer VC */
 const std::map<char, std::string> sim_keys = {

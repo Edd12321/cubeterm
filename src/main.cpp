@@ -71,7 +71,7 @@ int wc(std::string str)
 }
 
 #include "alg.cpp"
-std::thread threads[73];
+std::vector<std::thread> threads;
 std::mutex mut;
 
 static inline void DLS(Cube& c, int depth, moveset const& ms, state_condition const& goal,
@@ -125,7 +125,7 @@ static inline moves IDDFS(Cube& c, int max_depth, moveset const& ms, state_condi
 
 	// Multithreaded IDDFS (woaj so fast)
 	for (auto& it : ms) {
-		threads[it.value] = std::thread([&]() {
+		threads.emplace_back(std::thread([&]() {
 			Cube copy = c;
 			moves solution, curr;
 
@@ -139,11 +139,11 @@ static inline moves IDDFS(Cube& c, int max_depth, moveset const& ms, state_condi
 			if (found_solution && !solution.empty())
 				last_step_solution = solution;
 			mut.unlock();
-		});
+		}));
 	}
-	for (auto& it : ms) {
-		threads[it.value].join();
-	}
+	for (auto& thr : threads)
+		thr.join();
+	threads.clear();
 	return last_step_solution;
 }
 
@@ -173,9 +173,9 @@ namespace util
 			return false; // EO: Side colour on the top, bottom or front/back two edges.
 		if (is_col({
 		   c[1][0][1], c[1][1][0], c[1][1][2], c[1][2][1],
-   		   c[3][0][1], c[3][1][0], c[3][1][2], c[3][2][1],
-   		   c[2][0][1], c[2][2][1],
-    	   c[4][0][1], c[4][2][1]
+		   c[3][0][1], c[3][1][0], c[3][1][2], c[3][2][1],
+		   c[2][0][1], c[2][2][1],
+		   c[4][0][1], c[4][2][1]
 		}, c[0][1][1], c[5][1][1]))
 			return false; // EO: Top or bottom colour on the side edges.
 		return true;
@@ -697,7 +697,8 @@ void sim(Cube& c)
 int main(int argc, char *argv[])
 {
 	int opt;
-	std::string scram, method = default_method;
+	std::string scram;
+	const char *method = default_method;
 	bool vc = false;
 	Cube c;
 	while ((opt = getopt(argc, argv, "m:s:r:vo:t:")) != -1) {
@@ -745,16 +746,18 @@ int main(int argc, char *argv[])
 	using namespace std::chrono;
 	auto t1 = high_resolution_clock::now();
 
-	if (method == "CFOP")
+	if (!strcasecmp(method, "CFOP"))
 		solve::CFOP(c);
-	else if (method == "Roux")
+	else if (!strcasecmp(method, "Roux"))
 		solve::Roux(c);
-	else if (method == "ZZ")
+	else if (!strcasecmp(method, "ZZ"))
 		solve::ZZ(c);
-	else if (method == "Petrus")
+	else if (!strcasecmp(method, "Petrus"))
 		solve::Petrus(c);
-	else if (method == "2GR")
+	else if (!strcasecmp(method, "2GR"))
 		solve::_2GR(c);
+	else
+		usage();
 
 	auto t2 = high_resolution_clock::now();
 	auto sec = duration<double>(t2-t1);
