@@ -45,15 +45,15 @@ namespace alg
 
 	auto CLLtest = [](Cube const& c) {
 		for (auto it : { 1, 2, 3, 4 })
-			if (c.mat[it][0][0] != c.mat[it][0][2])
+			if (c[it][0][0] != c[it][0][2])
 				return false;
-		return c.mat[0][0][0] == c.mat[0][0][2] && c.mat[0][0][0] == c.mat[0][2][0] && c.mat[0][0][0] == c.mat[0][2][2];
+		return c[0][0][0] == c[0][0][2] && c[0][0][0] == c[0][2][0] && c[0][0][0] == c[0][2][2];
 	};
 
 	auto OLLtest = [](Cube const& c) {
 		for (int i = 0; i < 3; ++i)
 			for (int j = 0; j < 3; ++j)
-				if (c.mat[0][i][j] != c.mat[0][1][1])
+				if (c[0][i][j] != c[0][1][1])
 					return false;
 		return true;
 	};
@@ -61,7 +61,7 @@ namespace alg
 	auto PLLtest = [](Cube const& c) {
 		for (int i = 1; i <= 4; ++i)
 			for (int j = 0; j < 3; ++j)
-				if (c.mat[i][0][j] != c.mat[i][1][1])
+				if (c[i][0][j] != c[i][1][1])
 					return false;
 		return true;
 	};
@@ -75,10 +75,10 @@ namespace alg
 		for (auto it : std::vector<std::pair<int, int> >({ {1, 2}, {2, 3}, {3, 4}, {4, 1} })) {
 			auto i = it.first;
 			auto j = it.second;
-			if (c.mat[i][1][2] == c.mat[i][1][1]
-			&&  c.mat[i][2][2] == c.mat[i][1][1]
-			&&  c.mat[j][1][0] == c.mat[j][1][1]
-			&&  c.mat[j][2][0] == c.mat[j][1][1])
+			if (c[i][1][2] == c[i][1][1]
+			&&  c[i][2][2] == c[i][1][1]
+			&&  c[j][1][0] == c[j][1][1]
+			&&  c[j][2][0] == c[j][1][1])
 				++count;
 		}
 		return count;

@@ -165,18 +165,18 @@ namespace util
 			return false;
 		};
 		if (is_col({
-		   c.mat[0][0][1], c.mat[0][1][0], c.mat[0][1][2], c.mat[0][2][1],
-		   c.mat[5][0][1], c.mat[5][1][0], c.mat[5][1][2], c.mat[5][2][1],
-		   c.mat[2][1][0], c.mat[2][1][2],
-		   c.mat[4][1][0], c.mat[4][1][2]
-		}, c.mat[1][1][1], c.mat[3][1][1]))
+		   c[0][0][1], c[0][1][0], c[0][1][2], c[0][2][1],
+		   c[5][0][1], c[5][1][0], c[5][1][2], c[5][2][1],
+		   c[2][1][0], c[2][1][2],
+		   c[4][1][0], c[4][1][2]
+		}, c[1][1][1], c[3][1][1]))
 			return false; // EO: Side colour on the top, bottom or front/back two edges.
 		if (is_col({
-		   c.mat[1][0][1], c.mat[1][1][0], c.mat[1][1][2], c.mat[1][2][1],
-   		   c.mat[3][0][1], c.mat[3][1][0], c.mat[3][1][2], c.mat[3][2][1],
-   		   c.mat[2][0][1], c.mat[2][2][1],
-    	   c.mat[4][0][1], c.mat[4][2][1]
-		}, c.mat[0][1][1], c.mat[5][1][1]))
+		   c[1][0][1], c[1][1][0], c[1][1][2], c[1][2][1],
+   		   c[3][0][1], c[3][1][0], c[3][1][2], c[3][2][1],
+   		   c[2][0][1], c[2][2][1],
+    	   c[4][0][1], c[4][2][1]
+		}, c[0][1][1], c[5][1][1]))
 			return false; // EO: Top or bottom colour on the side edges.
 		return true;
 	};
@@ -188,29 +188,29 @@ namespace util
 			if (p.first.is_one_of({ C::R, C::U }))
 				ms.push_back(p.first);
 		return flatten(IDDFS(c, 14, ms, [](Cube const& c) {
-			if (c.mat[2][1][2] != c.mat[2][1][1] || c.mat[4][1][0] != c.mat[4][1][1]
-			||  c.mat[2][2][2] != c.mat[2][1][1] || c.mat[4][2][0] != c.mat[4][1][1])
+			if (c[2][1][2] != c[2][1][1] || c[4][1][0] != c[4][1][1]
+			||  c[2][2][2] != c[2][1][1] || c[4][2][0] != c[4][1][1])
 				return false;
 			for (int i = 0; i < 3; ++i)
-				if (c.mat[5][i][2] != c.mat[5][1][1])
+				if (c[5][i][2] != c[5][1][1])
 					return false;
 			for (int i = 1; i < 3; ++i)
 				for (int j = 0; j < 3; ++j)
-					if (c.mat[3][i][j] != c.mat[3][1][1])
+					if (c[3][i][j] != c[3][1][1])
 						return false;
 			return true;
 		}), step_name);
 	};
 
 	static auto block_2x2x2 = [](Cube const& c) {
-		return c.mat[1][1][0] == c.mat[1][1][1] && c.mat[1][2][0] == c.mat[1][1][1] && c.mat[1][2][1] == c.mat[1][1][1]
-		    && c.mat[4][1][2] == c.mat[4][1][1] && c.mat[4][2][2] == c.mat[4][1][1] && c.mat[4][2][1] == c.mat[4][1][1]
-		    && c.mat[5][1][0] == c.mat[5][1][1] && c.mat[5][2][0] == c.mat[5][1][1] && c.mat[5][2][1] == c.mat[5][1][1];
+		return c[1][1][0] == c[1][1][1] && c[1][2][0] == c[1][1][1] && c[1][2][1] == c[1][1][1]
+		    && c[4][1][2] == c[4][1][1] && c[4][2][2] == c[4][1][1] && c[4][2][1] == c[4][1][1]
+		    && c[5][1][0] == c[5][1][1] && c[5][2][0] == c[5][1][1] && c[5][2][1] == c[5][1][1];
 	};	
 	static auto block_2x2x1 = [](Cube const& c) {
-		return c.mat[3][1][2] == c.mat[3][1][1] && c.mat[3][2][2] == c.mat[3][1][1] && c.mat[3][2][1] == c.mat[3][1][1]
-		    && c.mat[4][1][0] == c.mat[4][1][1] && c.mat[4][2][0] == c.mat[4][1][1]
-		    && c.mat[5][2][2] == c.mat[5][1][1] && c.mat[5][1][2] == c.mat[5][1][1];
+		return c[3][1][2] == c[3][1][1] && c[3][2][2] == c[3][1][1] && c[3][2][1] == c[3][1][1]
+		    && c[4][1][0] == c[4][1][1] && c[4][2][0] == c[4][1][1]
+		    && c[5][2][2] == c[5][1][1] && c[5][1][2] == c[5][1][1];
 	};
 }
 
@@ -234,14 +234,14 @@ namespace solve
 				if (!p.first.is_one_of({ C::M, C::S, C::E, C::r, C::l, C::u, C::d, C::f, C::b, C::x, C::y, C::z }))
 					ms.push_back(p.first);
 			auto solve = IDDFS(c, 8, ms, [](Cube const& c) {
-				if (c.mat[5][0][1] != c.mat[5][1][0]
-				||  c.mat[5][1][0] != c.mat[5][1][2]
-				||  c.mat[5][1][2] != c.mat[5][2][1]
-				||  c.mat[5][2][1] != c.mat[5][1][1])
+				if (c[5][0][1] != c[5][1][0]
+				||  c[5][1][0] != c[5][1][2]
+				||  c[5][1][2] != c[5][2][1]
+				||  c[5][2][1] != c[5][1][1])
 					return false;
 				// Matching the centres
 				for (int i = 1; i < 5; ++i)
-					if (c.mat[i][1][1] != c.mat[i][2][1])
+					if (c[i][1][1] != c[i][2][1])
 						return false;
 				return true;
 			});
@@ -290,14 +290,14 @@ namespace solve
 				if (!p.first.is_one_of({ /*C::M, C::S, C::E,*/ C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
 					ms.push_back(p.first);
 			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [](Cube const& c) {
-				if (c.mat[2][1][0] != c.mat[2][2][0] || c.mat[4][1][2] != c.mat[4][2][2])
+				if (c[2][1][0] != c[2][2][0] || c[4][1][2] != c[4][2][2])
 					return false;
 				for (int i = 0; i < 3; ++i)
-					if (c.mat[5][i][0] != c.mat[5][1][0])
+					if (c[5][i][0] != c[5][1][0])
 						return false;
 				for (int i = 1; i < 3; ++i)
 					for (int j = 0; j < 3; ++j)
-						if (c.mat[1][i][j] != c.mat[1][1][1])
+						if (c[1][i][j] != c[1][1][1])
 							return false;
 				return true;
 			}), "FB");
@@ -314,20 +314,20 @@ namespace solve
 				if (p.first.is_one_of({ C::R, C::r, C::U, C::M }))
 					ms.push_back(p.first);
 			auto solve_1x2x2 = [](Cube const& c) {
-				if (c.mat[3][1][1] != c.mat[3][1][2] || c.mat[3][1][1] != c.mat[3][2][1] || c.mat[3][1][1] != c.mat[3][2][2])
+				if (c[3][1][1] != c[3][1][2] || c[3][1][1] != c[3][2][1] || c[3][1][1] != c[3][2][2])
 					return false; // Side
-				if (c.mat[4][1][0] != c.mat[4][1][2] || c.mat[4][2][0] != c.mat[4][1][2])
+				if (c[4][1][0] != c[4][1][2] || c[4][2][0] != c[4][1][2])
 					return false; // Back
-				if (c.mat[5][2][2] != c.mat[5][2][0] || c.mat[5][1][2] != c.mat[5][2][0])
+				if (c[5][2][2] != c[5][2][0] || c[5][1][2] != c[5][2][0])
 					return false; // Bottom
 				return true;
 			};
 			auto solve_1x1x2 = [](Cube const& c) {
-				if (c.mat[3][1][0] != c.mat[3][1][1])
+				if (c[3][1][0] != c[3][1][1])
 					return false; // Side
-				if (c.mat[2][1][2] != c.mat[2][1][0] || c.mat[2][2][2] != c.mat[2][1][0])
+				if (c[2][1][2] != c[2][1][0] || c[2][2][2] != c[2][1][0])
 					return false; // Front
-				if (c.mat[5][0][2] != c.mat[5][0][0])
+				if (c[5][0][2] != c[5][0][0])
 					return false; // Bottom
 				return true;
 			};
@@ -363,7 +363,7 @@ namespace solve
 				for (int i = 0; i < 3; ++i)
 					for (int j = 0; j < 3; ++j)
 						for (auto k : { 0, 2, 4, 5 })
-							if (c.mat[k][i][j] != c.mat[k][1][0])
+							if (c[k][i][j] != c[k][1][0])
 								return false;
 				return true;
 			}), "LSE");
@@ -383,10 +383,10 @@ namespace solve
 				if (!p.first.is_one_of({ C::M, C::S, C::E, C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
 					ms.push_back(p.first);
 			auto solve = flatten(IDDFS(c, 9, ms, [](Cube const& c) {
-				if (c.mat[2][2][1] != c.mat[2][1][1]
-				||  c.mat[5][0][1] != c.mat[5][1][1]
-				||  c.mat[5][2][1] != c.mat[5][1][1]
-				||  c.mat[4][2][1] != c.mat[4][1][1])
+				if (c[2][2][1] != c[2][1][1]
+				||  c[5][0][1] != c[5][1][1]
+				||  c[5][2][1] != c[5][1][1]
+				||  c[4][2][1] != c[4][1][1])
 					return false; // Line is not solved;
 				return util::eo_checker(c);
 			}), "EOLine");
@@ -402,15 +402,15 @@ namespace solve
 				if (p.first.is_one_of({ C::R, C::U, C::L }))
 					ms.push_back(p.first);
 			auto solve = flatten(IDDFS(c, 13, ms, [](Cube const& c) {
-				if (c.mat[2][1][0] != c.mat[2][1][1] || c.mat[4][1][2] != c.mat[4][1][1]
-				||  c.mat[2][2][0] != c.mat[2][1][1] || c.mat[4][2][2] != c.mat[4][1][1])
+				if (c[2][1][0] != c[2][1][1] || c[4][1][2] != c[4][1][1]
+				||  c[2][2][0] != c[2][1][1] || c[4][2][2] != c[4][1][1])
 					return false;
 				for (int i = 0; i < 3; ++i)
-					if (c.mat[5][i][0] != c.mat[5][1][1])
+					if (c[5][i][0] != c[5][1][1])
 						return false;
 				for (int i = 1; i < 3; ++i)
 					for (int j = 0; j < 3; ++j)
-						if (c.mat[1][i][j] != c.mat[1][1][1])
+						if (c[1][i][j] != c[1][1][1])
 							return false;
 				return true;
 			}), "LB");
@@ -507,8 +507,8 @@ namespace solve
 	static inline void _2GR(Cube& c)
 	{
 		auto eopair = [](Cube const& c) {
-			return c.mat[1][2][0] == c.mat[1][1][1] && c.mat[1][2][1] == c.mat[1][1][1]
-			&&     c.mat[5][2][0] == c.mat[5][1][1] && c.mat[5][1][0] == c.mat[5][1][1]
+			return c[1][2][0] == c[1][1][1] && c[1][2][1] == c[1][1][1]
+			&&     c[5][2][0] == c[5][1][1] && c[5][1][0] == c[5][1][1]
 			&&     util::eo_checker(c);
 		};
 		//----------
@@ -533,16 +533,16 @@ namespace solve
 				if (!p.first.is_one_of({ C::M, C::S, C::E, C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
 					ms.push_back(p.first);
 			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [&](Cube const& c) {
-				if (!eopair(c) || c.mat[1][2][2] != c.mat[1][2][1] || c.mat[5][0][0] != c.mat[5][1][0])
+				if (!eopair(c) || c[1][2][2] != c[1][2][1] || c[5][0][0] != c[5][1][0])
 					return false;
 				
 				static auto corn_check = [](Cube const& c) {
-					corner c1 = { c.mat[2][2][2], c.mat[3][2][0], c.mat[5][0][2] };
-					corner k1 = { c.mat[2][1][1], c.mat[3][1][1], c.mat[5][1][1] };
+					corner c1 = { c[2][2][2], c[3][2][0], c[5][0][2] };
+					corner k1 = { c[2][1][1], c[3][1][1], c[5][1][1] };
 					if (c1 != k1)
 						return false;
-					corner c2 = { c.mat[3][2][2], c.mat[4][2][0], c.mat[5][2][2] };
-					corner k2 = { c.mat[3][1][1], c.mat[4][1][1], c.mat[5][1][1] };
+					corner c2 = { c[3][2][2], c[4][2][0], c[5][2][2] };
+					corner k2 = { c[3][1][1], c[4][1][1], c[5][1][1] };
 					if (c2 != k2)
 						return false;
 					return true;
@@ -561,17 +561,17 @@ namespace solve
 				// Placed down DR corners, now "twist" the remaining ones
 				for (int i = 0; i < 4; ++i) {
 					bool ok = true;
-					corner c1 = { copy.mat[0][0][0], copy.mat[1][0][0], copy.mat[4][0][2] };
-					corner k1 = { copy.mat[0][1][1], copy.mat[1][1][1], copy.mat[4][1][1] };
+					corner c1 = { copy[0][0][0], copy[1][0][0], copy[4][0][2] };
+					corner k1 = { copy[0][1][1], copy[1][1][1], copy[4][1][1] };
 					ok &= (c1 == k1);
-					corner c2 = { copy.mat[0][0][2], copy.mat[3][0][2], copy.mat[4][0][0] };
-					corner k2 = { copy.mat[0][1][1], copy.mat[3][1][1], copy.mat[4][1][1] };
+					corner c2 = { copy[0][0][2], copy[3][0][2], copy[4][0][0] };
+					corner k2 = { copy[0][1][1], copy[3][1][1], copy[4][1][1] };
 					ok &= (c2 == k2);
-					corner c3 = { copy.mat[0][2][0], copy.mat[1][0][2], copy.mat[2][0][0] };
-					corner k3 = { copy.mat[0][1][1], copy.mat[1][1][1], copy.mat[2][1][1] };
+					corner c3 = { copy[0][2][0], copy[1][0][2], copy[2][0][0] };
+					corner k3 = { copy[0][1][1], copy[1][1][1], copy[2][1][1] };
 					ok &= (c3 == k3);
-					corner c4 = { copy.mat[0][2][2], copy.mat[2][0][2], copy.mat[3][0][0] };
-					corner k4 = { copy.mat[0][1][1], copy.mat[2][1][1], copy.mat[3][1][1] };
+					corner c4 = { copy[0][2][2], copy[2][0][2], copy[3][0][0] };
+					corner k4 = { copy[0][1][1], copy[2][1][1], copy[3][1][1] };
 					ok &= (c4 == k4);
 					if (ok)
 						return true;

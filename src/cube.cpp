@@ -103,6 +103,11 @@ public:
 	Cube();
 	~Cube();
 
+	inline Face const& operator[](int face) const
+	{
+		return mat[face];
+	}
+
 /* Syntax:
 	"Define a move X,
 		which cycles the pieces CYC4->CYC3->CYC2->CYC1",
