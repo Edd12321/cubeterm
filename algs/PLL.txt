@@ -18,4 +18,4 @@
 "M2 U' M U2 M' U' M2",
 "R' U R' U' R D' R' D R' U D' R2 U' R2 D R2",
 "F R U' R' U' R U R' F' R U R' U' R' F R F'",
-"M' U' M2 U' M2 U' M' U2 M2",
+"M2 U M2 U M' U2 M2 U2 M'",

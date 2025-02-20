@@ -101,7 +101,7 @@
 "R U' R' F R' F' R",
 "r U r' U' r' F r F'",
 "L S L' U L S' L'",
-"R' U R U R' U R U' R' U' R",
+"f R f' U' R' U' R",
 "R U' R' U R U' R'",
 "L' U' L U F' r U r'",
 "L U' L' U L U' L'",

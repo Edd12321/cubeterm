@@ -759,6 +759,9 @@ int main(int argc, char *argv[])
 	else
 		usage();
 
+	// Don't forget the AUF
+	std::cout << alg::brute_force(c, {""}, alg::LLtest, "AUF");
+
 	auto t2 = high_resolution_clock::now();
 	auto sec = duration<double>(t2-t1);
 	std::cout << "\nDone! Time spent finding the solution: ~" << sec.count() << "s";
