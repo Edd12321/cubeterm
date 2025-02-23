@@ -682,14 +682,13 @@ void sim(Cube& c)
 	                       "qwertyuiop[]{}\n"
 	                       "asdfghjkl;':\"\n"
 	                       "zxcvbnm,./<>?\n\n";
-
-	std::cout << "\033[?25lControls:";
 	for (auto const& ch : keyboard) {
 		if (ch == '\n')
 			std::cout << '\n';
 		else if (sim_keys.find(ch) != sim_keys.end())
 			std::cout << "\033[1;7m" << ch << " = " << sim_keys.at(ch) << "\033[m  ";
 	}
+	std::cout << "\033[1;7mCtrl-C = Confirm choice\033[m\n\n"; 
 	
 	RawInputMode rim;
 	signal(SIGINT, handle_int);
@@ -714,17 +713,17 @@ void int_input(Cube& c)
 	signal(SIGINT, handle_int);
 	
 	std::cout << "\033[?25lControls:\n"
-	             "\033[1;7mW = Up\033[m "
-	             "\033[1;7mA = Left\033[m "
-	             "\033[1;7mS = Right\033[m "
-	             "\033[1;7mD = Down\033[m\n"
+	             "\033[1;7m↑ = Up\033[m "
+	             "\033[1;7m← = Left\033[m "
+	             "\033[1;7m→ = Right\033[m "
+	             "\033[1;7m↓ = Down\033[m\n"
 	             "\033[1;7mW = Set to White\033[m\n"
 	             "\033[1;7mO = Set to Orange\033[m\n"
 	             "\033[1;7mG = Set to Green\033[m\n"
 	             "\033[1;7mR = Set to Red\033[m\n"
 	             "\033[1;7mB = Set to Blue\033[m\n"
 	             "\033[1;7mY = Set to Yellow\033[m\n"
-	             "\033[1;7mQ = Confirm choice\033[m\n";
+	             "\033[1;7mQ = Confirm choice\033[m\n\n";
 	
 	int face = 0, i = 0, j = 0;
 	c.mark(0, 0, 0);
@@ -843,11 +842,9 @@ int main(int argc, char *argv[])
 	}
 	c.eval(scram);
 
-	if (vc) {
+	if (vc)
 		sim(c);
-		return 0;
-	}
-	if (i)
+	else if (i)
 		int_input(c);
 	else {
 		if (argc < 3)
