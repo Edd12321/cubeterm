@@ -626,7 +626,7 @@ namespace solve
 
 void usage()
 {
-	std::cerr << "usage: cubeterm [-v]|[-m CFOP|Roux|ZZ|Petrus|2GR][-o <file>] -s <scramble>|-r <random_length> [-t 1|0]\n";
+	std::cerr << "usage: cubeterm [-v]|[-i]|[-m CFOP|Roux|ZZ|Petrus|2GR][-o <file>] -s <scramble>|-r <random_length> [-t 1|0]\n";
 	std::exit(EXIT_FAILURE);
 }
 
@@ -655,12 +655,33 @@ static inline void handle_int(int x)
 	cont = 1;
 }
 
+class RawInputMode
+{
+private:
+	struct termios term, old;
+public:
+	RawInputMode()
+	{
+		tcgetattr(STDIN_FILENO, &term);
+		old = term;
+		term.c_lflag &= ~ICANON;
+		term.c_lflag &= ~ECHO;
+		tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	}
+
+	~RawInputMode()
+	{
+		tcsetattr(STDIN_FILENO, TCSANOW, &old);
+		std::cout << "\033[?25h";
+	}
+};
+
 void sim(Cube& c)
 {
-	std::string keyboard = "\n1234567890\n"
-	                       "qwertyuiop\n"
-	                       "asdfghjkl;\n"
-	                       "zxcvbnm,./\n\n";
+	std::string keyboard = "\n1234567890-=!@#$%^&*()_+\n"
+	                       "qwertyuiop[]{}\n"
+	                       "asdfghjkl;':\"\n"
+	                       "zxcvbnm,./<>?\n\n";
 
 	std::cout << "\033[?25lControls:";
 	for (auto const& ch : keyboard) {
@@ -670,14 +691,8 @@ void sim(Cube& c)
 			std::cout << "\033[1;7m" << ch << " = " << sim_keys.at(ch) << "\033[m  ";
 	}
 	
-	struct termios term, old;
-	tcgetattr(STDIN_FILENO, &term);
-	old = term;
-	term.c_lflag &= ~ICANON;
-	term.c_lflag &= ~ECHO;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	RawInputMode rim;
 	signal(SIGINT, handle_int);
-
 	char ch;
 	for (;;) {
 		std::cout << c;
@@ -689,9 +704,100 @@ void sim(Cube& c)
 			break;
 		std::cout << "\033[9A\r";
 	}
-	tcsetattr(STDIN_FILENO, TCSANOW, &old);
-	std::cout << "\033[?25h";
 	return;
+}
+
+void int_input(Cube& c)
+{
+	RawInputMode rim;
+	char ch;
+	signal(SIGINT, handle_int);
+	
+	std::cout << "\033[?25lControls:\n"
+	             "\033[1;7mW = Up\033[m "
+	             "\033[1;7mA = Left\033[m "
+	             "\033[1;7mS = Right\033[m "
+	             "\033[1;7mD = Down\033[m\n"
+	             "\033[1;7mW = Set to White\033[m\n"
+	             "\033[1;7mO = Set to Orange\033[m\n"
+	             "\033[1;7mG = Set to Green\033[m\n"
+	             "\033[1;7mR = Set to Red\033[m\n"
+	             "\033[1;7mB = Set to Blue\033[m\n"
+	             "\033[1;7mY = Set to Yellow\033[m\n"
+	             "\033[1;7mQ = Confirm choice\033[m\n";
+	
+	int face = 0, i = 0, j = 0;
+	c.mark(0, 0, 0);
+	for (;;) {
+		std::cout << c;
+		std::cin >> ch;
+		ch = toupper(ch);
+		switch (ch) {
+			case '\033':
+				std::cin >> ch >> ch; // Assume [ch
+				switch (toupper(ch)) {
+#if defined(_WIN32)
+					case 'H': --i; break;
+					case 'P': ++i; break;
+					case 'K': ++j; break;
+					case 'M': --j; break;
+#else
+					case 'A': --i; break;
+					case 'B': ++i; break;
+					case 'C': ++j; break;
+					case 'D': --j; break;
+#endif
+				}
+				break;
+			case 'Q':
+				return;
+			default:
+				c.setcol(face, i, j, ch);
+		}
+		// Clamp
+		switch (face) {
+			case 0:
+				if (i < 0) i = 0;
+				if (j < 0) j = 0;
+				if (i > 2) i = 0, face = 2;
+				if (j > 2) j = 2;
+				break;
+			case 1:
+				if (i < 0) i = 0;
+				if (j < 0) j = 0;
+				if (i > 2) i = 2;
+				if (j > 2) j = 0, face = 2;
+				break;
+			case 2:
+				if (i < 0) i = 2, face = 0;
+				if (j < 0) j = 2, face = 1;
+				if (i > 2) i = 0, face = 5;
+				if (j > 2) j = 0, face = 3;
+				break;
+			case 3:
+				if (i < 0) i = 0;
+				if (j < 0) j = 2, face = 2;
+				if (i > 2) i = 2;
+				if (j > 2) j = 0, face = 4;
+				break;
+			case 4:
+				if (i < 0) i = 0;
+				if (j < 0) j = 2, face = 3;
+				if (i > 2) i = 2;
+				if (j > 2) j = 2;
+				break;
+			case 5:
+				if (i < 0) i = 2, face = 2;
+				if (j < 0) j = 0;
+				if (i > 2) i = 2;
+				if (j > 2) j = 2;
+				break;
+		}
+		c.mark(face, i, j);
+		if (cont)
+			break;
+		std::cout << "\033[9A\r";
+	}
 }
 
 int main(int argc, char *argv[])
@@ -699,9 +805,9 @@ int main(int argc, char *argv[])
 	int opt;
 	std::string scram;
 	const char *method = default_method;
-	bool vc = false;
+	bool vc = false, i = false;
 	Cube c;
-	while ((opt = getopt(argc, argv, "m:s:r:vo:t:")) != -1) {
+	while ((opt = getopt(argc, argv, "m:s:r:vo:t:i")) != -1) {
 		switch (opt) {
 		case 's':
 			scram = optarg;
@@ -711,6 +817,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'r':
 			scram = randscram(std::atoi(optarg));
+			break;
+		case 'i':
+			i = true;
 			break;
 		case 'v':
 			vc = true;
@@ -738,11 +847,14 @@ int main(int argc, char *argv[])
 		sim(c);
 		return 0;
 	}
-	if (argc < 3)
-		usage();
-	
-	std::cout << "Scramble: " << scram << '\n' << c;
-	
+	if (i)
+		int_input(c);
+	else {
+		if (argc < 3)
+			usage();
+		std::cout << "Scramble: " << scram << '\n' << c;
+	}
+
 	using namespace std::chrono;
 	auto t1 = high_resolution_clock::now();
 

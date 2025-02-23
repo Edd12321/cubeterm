@@ -5,6 +5,8 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include <cstdint>
+#include <cstring>
 
 class Cube
 {
@@ -81,17 +83,19 @@ private:
 	using CubeRaw = std::array<Face, 6>;
 	CubeRaw old;
 	const char *ansicol[6] = {
-		"\33[107m  \33[0m", // White
-		"\33[101m  \33[0m", // Orange
-		"\33[42m  \33[0m",  // Green
-		"\33[41m  \33[0m",  // Red
-		"\33[44m  \33[0m",  // Blue
-		"\33[103m  \33[0m"  // Yellow
+		"\33[107;30m", // White
+		"\33[101;30m", // Orange
+		"\33[42;30m",  // Green
+		"\33[41;30m",  // Red
+		"\33[44;30m",  // Blue
+		"\33[103;30m"  // Yellow
 	};
+	const char *reset_ansi = "\33[0m";
+
 	inline void rot90cw(Face&);
 	inline void rot90acw(Face&);
 	inline void rot180(Face&);
-
+	int face = -1, mark_x = 0, mark_y = 0;
 public:
 	// <=> std::int_fast8_t mat[6][3][3];
 	CubeRaw mat;
@@ -106,6 +110,23 @@ public:
 	inline Face const& operator[](int face) const
 	{
 		return mat[face];
+	}
+
+	inline void setcol(int face, int mark_x, int mark_y, char col)
+	{
+		static const char *cols = "WOGRBY";
+		const char *find = std::strchr(cols, col);
+		if (find) {
+			Facelet col = static_cast<Facelet>(find - cols);
+			mat[face][mark_x][mark_y] = col;
+		}
+	}
+
+	inline void mark(int face, int mark_x, int mark_y)
+	{
+		this->face = face;
+		this->mark_x = mark_x;
+		this->mark_y = mark_y;
 	}
 
 /* Syntax:
@@ -201,19 +222,23 @@ Cube::~Cube()
 
 std::ostream& operator<<(std::ostream& out, const Cube& c)
 {
+	auto helper = [&](int k, int i, int j)
+	{
+		out << c.ansicol[c.mat[k][i][j]] << (c.face == k && c.mark_x == i && c.mark_y == j ? "XX" : "  ") << c.reset_ansi;
+	};
 	for (int i = 0; i < 3; ++i, out << '\n') {
 		out << std::string(6, ' ');
 		for (int j = 0; j < 3; ++j)
-			out << c.ansicol[c.mat[0][i][j]];
+			helper(0, i, j);
 	}
 	for (int i = 0; i < 3; ++i, out << '\n')
 		for (int k = 1; k < 5; ++k)
 			for (int j = 0; j < 3; ++j)
-				out << c.ansicol[c.mat[k][i][j]];
+				helper(k, i, j);	
 	for (int i = 0; i < 3; ++i, out << '\n') {
 		out << std::string(6, ' ');
 		for (int j = 0; j < 3; ++j)
-			out << c.ansicol[c.mat[5][i][j]];
+			helper(5, i, j);
 	}
 	return out;
 }
