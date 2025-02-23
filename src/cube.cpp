@@ -224,7 +224,7 @@ std::ostream& operator<<(std::ostream& out, const Cube& c)
 {
 	auto helper = [&](int k, int i, int j)
 	{
-		out << c.ansicol[c.mat[k][i][j]] << (c.face == k && c.mark_x == i && c.mark_y == j ? "XX" : "  ") << c.reset_ansi;
+		out << c.ansicol[c.mat[k][i][j]] << (c.face == k && c.mark_x == i && c.mark_y == j ? "[]" : "  ") << c.reset_ansi;
 	};
 	for (int i = 0; i < 3; ++i, out << '\n') {
 		out << std::string(6, ' ');
