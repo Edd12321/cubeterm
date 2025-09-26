@@ -118,8 +118,8 @@ namespace alg
                                                           bool ok = false;                                                    \
                                                           if (pair_count(OLD_CUBE) == 4)                                      \
                                                             goto _skip;                                                       \
-                                                          for (auto& R : rotations) {                                         \
-                                                            for (auto& A : AUF) {                                             \
+                                                          for (auto& A : AUF) {                                               \
+                                                            for (auto& R : rotations) {                                       \
                                                               for (auto& P : F2L) {                                           \
                                                                 Cube NEW_CUBE = OLD_CUBE;                                     \
                                                                 auto moves = R+A+P;                                           \
