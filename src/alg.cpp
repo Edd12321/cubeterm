@@ -76,23 +76,25 @@ namespace alg
 			auto i = it.first;
 			auto j = it.second;
 			if (c[i][1][2] == c[i][1][1]
-			&&  c[i][2][2] == c[i][1][1]
+			&&  c[i][2][2] == c[i][2][1]
 			&&  c[j][1][0] == c[j][1][1]
-			&&  c[j][2][0] == c[j][1][1])
+			&&  c[j][2][0] == c[j][2][1])
 				++count;
 		}
 		return count;
 	};
 
-	std::string brute_force(Cube& c, std::set<std::string> const& algset, state_condition const& goal, std::string const& step_name)
+	std::string brute_force(Cube& c, std::set<std::string> const& algset, state_condition const& goal, std::string const& step_name, bool auf = true)
 	{
-		static std::set<std::string> AUF = { "U", "U2", "U'", "" };
+		if (goal(c))
+			return "";
+		auto AUF = auf ? std::set{"U", "U2", "U'", ""} : std::set{""};
 		for (auto it : algset) {
 			for (auto pre : AUF) {
 				for (auto post : AUF) {
 					++cnt;
 					auto bak = c;
-					auto alg_w_auf = pre + (pre.empty() ? "" : " ") + it+" "+post;
+					auto alg_w_auf = pre + std::string(" ") + it+" "+post;
 					auto moves = bak.eval(alg_w_auf);
 					last_etm += moves;
 					if (goal(bak)) {
@@ -107,58 +109,50 @@ namespace alg
 		return "";
 	}
 
-	inline std::string brute_force_f2l(Cube& c)
+	inline std::string brute_force_f2l(Cube c)
 	{
 		static std::set<std::string> AUF = { " ", "U ", "U' ", "U2 " };
-		static std::set<std::string> rotations = { " ", "y ", "y' ", "y2 " };
+		static std::set<std::string> ADF = { " ", "D ", "D' ", "D2 " };
+		static std::set<std::string> rotations = { " ", "y ", "y' "/*, "y2 " nah */ };
 		std::string solve;
 		int pc = pair_count(c);
-#define BACKTRACK_F2L(OLD_CUBE, NEW_CUBE, STMT) {                                                                             \
-                                                _try_again_##OLD_CUBE:                                                        \
-                                                          bool ok = false;                                                    \
-                                                          if (pair_count(OLD_CUBE) == 4)                                      \
-                                                            goto _skip;                                                       \
-                                                          for (auto& A : AUF) {                                               \
-                                                            for (auto& R : rotations) {                                       \
-                                                              for (auto& P : F2L) {                                           \
-                                                                Cube NEW_CUBE = OLD_CUBE;                                     \
-                                                                auto moves = R+A+P;                                           \
-                                                                NEW_CUBE.eval(moves);                                         \
-                                                                int npc = pair_count(NEW_CUBE);                               \
-                                                                if (npc > pc) {                                               \
-                                                                  ok = true, pc = npc;                                        \
-                                                                  last_etm += wc(moves);                                      \
-                                                                  solve += flatten(moves, "F2L"+std::to_string(npc));         \
-                                                                  STMT;                                                       \
-                                                                }                                                             \
-                                                              }                                                               \
-                                                            }                                                                 \
-                                                          }                                                                   \
-                                                          /* SCDB has no algs for 2 trapped pieces in different slots */      \
-                                                          if (!ok) {                                                          \
-                                                            for (auto& R : rotations) {                                       \
-                                                              Cube NEW_CUBE = OLD_CUBE;                                       \
-                                                              auto moves = R + "R U R'";                                      \
-                                                              NEW_CUBE.eval(moves);                                           \
-                                                              if (pair_count(NEW_CUBE) == pc) {                               \
-                                                                OLD_CUBE = NEW_CUBE;                                          \
-                                                                last_etm += wc(moves);                                        \
-                                                                solve += moves + ' ';                                         \
-                                                                goto _try_again_##OLD_CUBE;                                   \
-                                                              }                                                               \
-                                                            }                                                                 \
-                                                          }                                                                   \
-                                                        }
-		BACKTRACK_F2L(c, copy1,
-			BACKTRACK_F2L(copy1, copy2,
-				BACKTRACK_F2L(copy2, copy3,
-					BACKTRACK_F2L(copy3, copy4,
-						goto _skip;
-					)
-				)
-			)
-		);
-_skip:
+
+		while (pc < 4) {
+			std::string chosen_sol;
+			int min_mvc = 20, max_pcc = 1;
+			bool pseudo = false;
+			for (auto const& auf : AUF)
+			for (auto const& adf : ADF)
+			for (auto const& pair : F2L)
+			for (auto const& rot : rotations) {
+				if (pair.empty())
+					continue;
+				std::string sol = rot + adf + auf + pair;
+				Cube c2 = c;
+				c2.eval(sol);
+				int pcc = pair_count(c2) - pc, mvc = wc(sol);
+				if (max_pcc == 1 && pcc == 2) {
+					min_mvc = 20;
+					max_pcc = 2;
+				}
+				if (pcc == max_pcc && mvc < min_mvc) {
+					chosen_sol = sol;
+					min_mvc = mvc;
+					pseudo = adf[0] == 'D';
+				}
+			}
+			int old_pc = pc;
+			c.eval(chosen_sol);
+			last_etm += wc(chosen_sol);
+			pc = pair_count(c);
+			std::string step = "F2L";
+			if (pc - old_pc < 2)
+				step += std::to_string(pc);
+			else step += std::to_string(pc-1) + "&" + std::to_string(pc);
+			if (pseudo)
+				step = "Pseudo " + step;
+			solve += flatten(chosen_sol, step); 
+		}
 		return solve;
 	}
 };

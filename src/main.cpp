@@ -268,12 +268,21 @@ namespace solve
 			auto solve = alg::brute_force_f2l(c);
 			c.eval(solve);
 			std::cout << solve;
+			std::cout << alg::brute_force(c, {"D", "D2", "D'"}, [](Cube c) {
+				c.do_turn(C::z2);
+				return alg::LLtest(c);
+			}, "ADF", false);
 		}
 
 		//---------------
 		// 3. OLL, 4. PLL
 		//---------------
 		{	
+			auto zbll = alg::brute_force(c, alg::ZBLL, alg::LLtest, "ZBLL");
+			if (!zbll.empty()) {
+				std::cout << zbll;
+				return;
+			}
 			std::cout << alg::brute_force(c, alg::OLL, alg::OLLtest, "OLL");
 			std::cout << alg::brute_force(c, alg::PLL, alg::PLLtest, "PLL");
 		}
@@ -869,7 +878,7 @@ int main(int argc, char *argv[])
 		usage();
 
 	// Don't forget the AUF
-	std::cout << alg::brute_force(c, {""}, alg::LLtest, "AUF");
+	std::cout << alg::brute_force(c, {"U", "U2", "U'"}, alg::LLtest, "AUF", false);
 
 	auto t2 = high_resolution_clock::now();
 	auto sec = duration<double>(t2-t1);
