@@ -1,7 +1,9 @@
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
 #include <utility>
+#include <functional>
 namespace alg
 {
 	struct WcComparator {
@@ -114,13 +116,22 @@ namespace alg
 		static std::set<std::string> AUF = { " ", "U ", "U' ", "U2 " };
 		static std::set<std::string> ADF = { " ", "D ", "D' ", "D2 " };
 		static std::set<std::string> rotations = { " ", "y ", "y' "/*, "y2 " nah */ };
-		std::string solve;
-		int pc = pair_count(c);
 
-		while (pc < 4) {
-			std::string chosen_sol;
-			int min_mvc = 20, max_pcc = 1;
-			bool pseudo = false;
+		struct Result {
+			int etm;
+			std::string sol;
+		};
+		std::function<Result(int, int, Cube const&, std::string)> greedy_rec;
+		
+		greedy_rec = [&](int pc, int curr_etm, Cube const& c, std::string solve) {
+			struct Candidate {
+				std::string sol;
+				int pcc, mvc;
+				bool pseudo;
+			};
+			std::vector<Candidate> cands; 
+			Cube k;
+			if (pc == 4) return Result{curr_etm, solve};
 			for (auto const& auf : AUF)
 			for (auto const& adf : ADF)
 			for (auto const& pair : F2L)
@@ -128,31 +139,43 @@ namespace alg
 				if (pair.empty())
 					continue;
 				std::string sol = rot + adf + auf + pair;
-				Cube c2 = c;
-				c2.eval(sol);
-				int pcc = pair_count(c2) - pc, mvc = wc(sol);
-				if (max_pcc == 1 && pcc == 2) {
-					min_mvc = 20;
-					max_pcc = 2;
-				}
-				if (pcc == max_pcc && mvc < min_mvc) {
-					chosen_sol = sol;
-					min_mvc = mvc;
-					pseudo = adf[0] == 'D';
+				k = c;
+				k.eval(sol);
+				int pcc = pair_count(k) - pc, mvc = wc(sol);
+				bool pseudo = adf[0] == 'D';
+				if (pcc <= 0) continue;
+				cands.push_back({sol, pcc, mvc, pseudo});
+			}
+			std::sort(cands.begin(), cands.end(), [](Candidate const& lhs, Candidate const& rhs) {
+				if (lhs.pcc != rhs.pcc)
+					return lhs.pcc > rhs.pcc;
+				return lhs.mvc < rhs.mvc;
+			});
+			int min_mvc = 100;
+			std::string best_sol;
+			for (size_t i = 0; i < std::min(F2L_BRANCH, cands.size()); ++i) {
+				int mvc = wc(cands[i].sol);
+				k = c;
+				k.eval(cands[i].sol);
+				int new_pc = pair_count(k);
+				std::string step = "F2L";
+				if (new_pc - pc < 2)
+					step += std::to_string(new_pc);
+				else step += std::to_string(new_pc-1) + "&" + std::to_string(new_pc);
+				if (cands[i].pseudo)
+					step = "Pseudo " + step;
+				last_etm += mvc;
+				Result r = greedy_rec(new_pc, curr_etm + mvc, k, solve + flatten(cands[i].sol, step));
+				last_etm -= mvc;
+				if (r.etm < min_mvc) {
+					min_mvc = r.etm;
+					best_sol = r.sol;
 				}
 			}
-			int old_pc = pc;
-			c.eval(chosen_sol);
-			last_etm += wc(chosen_sol);
-			pc = pair_count(c);
-			std::string step = "F2L";
-			if (pc - old_pc < 2)
-				step += std::to_string(pc);
-			else step += std::to_string(pc-1) + "&" + std::to_string(pc);
-			if (pseudo)
-				step = "Pseudo " + step;
-			solve += flatten(chosen_sol, step); 
-		}
-		return solve;
+			return Result{min_mvc, best_sol};
+		};
+		auto found = greedy_rec(0, 0, c, "");
+		last_etm += found.etm;
+		return found.sol;
 	}
 };
