@@ -11,3 +11,6 @@ const std::map<char, std::string> sim_keys = {
 
 /* Should CT run on multiple threads by default? (finds nodes faster, but solutions may be suboptimal */
 bool use_multithreading = true;
+
+/* How many F2L candidates should CFOP try at once? */
+size_t F2L_BRANCH = 5;
