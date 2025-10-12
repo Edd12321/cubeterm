@@ -29,7 +29,7 @@
 "R U R' U R' F R F' R U2 R'",
 "r U' r' F R' F' R",
 "R' U' R U' R' U2 R",
-"R' U' R U' R' U R' D' R U R' D R2",
+"R U R2 F' r F R U' r2 F r",
 "F' r U r' U2 r' F2 r",
 "R U2 R' U2 R' F R F'",
 "R' F R F' r U r'",

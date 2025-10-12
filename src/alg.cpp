@@ -44,6 +44,9 @@ namespace alg
 	std::set<std::string> COLL = {
 		#include "../algs/COLL.txt"
 	};
+	std::set<std::string> TDR = {
+		#include "../algs/TDR.txt"
+	};
 
 	auto CLLtest = [](Cube const& c) {
 		for (auto it : { 1, 2, 3, 4 })
@@ -70,6 +73,12 @@ namespace alg
 
 	auto LLtest = [](Cube const& c) {
 		return OLLtest(c) && PLLtest(c);
+	};
+	
+	auto TDRtest = [](Cube const& c) {
+		return c[2][2][2] == c[2][2][1] && c[5][0][2] == c[5][0][1]
+		    && c[4][2][2] == c[4][2][1] && c[5][2][2] == c[5][2][1]
+		    && c[5][1][1] == c[5][1][2] && c[3][2][1] == c[3][2][2];
 	};
 
 	auto pair_count = [](Cube const& c) {

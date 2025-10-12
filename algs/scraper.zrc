@@ -1,10 +1,10 @@
-#!/usr/lib/zrc/bin/zrc
+#!/usr/local/bin/zrc
 set algsets = {
 	ZBLLT ZBLLU ZBLLL ZBLLH ZBLLPi ZBLLS ZBLLAS
 	F2L AdvancedF2L OLL PLL
 	CMLL
 	COLL
-	-
+	TDR
 }
 
 fn deletable {

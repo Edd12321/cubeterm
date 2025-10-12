@@ -38,7 +38,7 @@
 "L' U L U' F U F'",
 "L U L' U L U L'",
 "R' U R U' f R f'",
-"R U2 R2 U' R2 U' R'",
+"R U2 R' U F' U' F",
 "L' U L U' L' U L U2 L' U L",
 "L U2 L' U f' L' f",
 "R' U R U' R' U R U2 R' U R",

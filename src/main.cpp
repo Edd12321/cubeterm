@@ -181,6 +181,20 @@ namespace util
 		return true;
 	};
 
+	bool check_rouxblock(Cube const& c)
+	{
+		if (c[2][1][0] != c[2][2][0] || c[4][1][2] != c[4][2][2])
+			return false;
+		for (int i = 0; i < 3; ++i)
+			if (c[5][i][0] != c[5][1][0])
+				return false;
+		for (int i = 1; i < 3; ++i)
+			for (int j = 0; j < 3; ++j)
+				if (c[1][i][j] != c[1][1][1])
+					return false;
+		return true;
+	}
+
 	std::string solve_right_block (Cube& c, std::string const& step_name)
 	{
 		moveset ms;
@@ -202,12 +216,14 @@ namespace util
 		}), step_name);
 	};
 
-	static auto block_2x2x2 = [](Cube const& c) {
+	static inline bool block_2x2x2(Cube const& c)
+	{
 		return c[1][1][0] == c[1][1][1] && c[1][2][0] == c[1][1][1] && c[1][2][1] == c[1][1][1]
 		    && c[4][1][2] == c[4][1][1] && c[4][2][2] == c[4][1][1] && c[4][2][1] == c[4][1][1]
 		    && c[5][1][0] == c[5][1][1] && c[5][2][0] == c[5][1][1] && c[5][2][1] == c[5][1][1];
 	};	
-	static auto block_2x2x1 = [](Cube const& c) {
+	static inline bool block_2x2x1(Cube const& c)
+	{
 		return c[3][1][2] == c[3][1][1] && c[3][2][2] == c[3][1][1] && c[3][2][1] == c[3][1][1]
 		    && c[4][1][0] == c[4][1][1] && c[4][2][0] == c[4][1][1]
 		    && c[5][2][2] == c[5][1][1] && c[5][1][2] == c[5][1][1];
@@ -268,10 +284,6 @@ namespace solve
 			auto solve = alg::brute_force_f2l(c);
 			c.eval(solve);
 			std::cout << solve;
-			std::cout << alg::brute_force(c, {"D", "D2", "D'"}, [](Cube c) {
-				c.do_turn(C::z2);
-				return alg::LLtest(c);
-			}, "ADF", false);
 		}
 
 		//---------------
@@ -298,18 +310,7 @@ namespace solve
 			for (auto p : c.turn)
 				if (!p.first.is_one_of({ /*C::M, C::S, C::E,*/ C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
 					ms.push_back(p.first);
-			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [](Cube const& c) {
-				if (c[2][1][0] != c[2][2][0] || c[4][1][2] != c[4][2][2])
-					return false;
-				for (int i = 0; i < 3; ++i)
-					if (c[5][i][0] != c[5][1][0])
-						return false;
-				for (int i = 1; i < 3; ++i)
-					for (int j = 0; j < 3; ++j)
-						if (c[1][i][j] != c[1][1][1])
-							return false;
-				return true;
-			}), "FB");
+			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, util::check_rouxblock), "FB");
 			c.eval(solve);
 			std::cout << solve;
 		}
@@ -597,10 +598,9 @@ namespace solve
 		//---------
 		{
 			moveset ms = { C::r2, C::u2, C::R, C::Rp, C::R2, C::U, C::Up, C::U2 };
-			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [](Cube const& c) {
-				Cube copy = c;
-				copy.do_turn(C::y);
-				return util::block_2x2x2(copy) && util::block_2x2x1(copy);
+			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [](Cube c) {
+				c.do_turn(C::y);
+				return util::block_2x2x2(c) && util::block_2x2x1(c);
 			}), "Block");
 			c.eval(solve);
 			std::cout << solve;
@@ -631,11 +631,93 @@ namespace solve
 			}
 		}	
 	}
+
+	static inline void Mehta(Cube& c)
+	{
+		auto check_mehtablock = [&](Cube c) {
+			c.do_turn(C::zp);
+			c.do_turn(C::y2);
+			return util::check_rouxblock(c);
+		};
+		auto check_3qb = [&](Cube const& c) {
+			return c[1][1][0] == c[1][1][1] && c[4][1][2] == c[4][1][1]
+			    && c[1][1][2] == c[1][1][1] && c[2][1][0] == c[2][1][1]
+			    && c[3][1][2] == c[3][1][1] && c[4][1][0] == c[4][1][1];	
+		};
+
+		//------
+		// 1. FB
+		//------
+		{
+			moveset ms;
+			for (auto p : c.turn)
+				if (!p.first.is_one_of({ /*C::M, C::S, C::E,*/ C::r, C::u, C::l, C::d, C::f, C::b, C::x, C::y, C::z }))
+					ms.push_back(p.first);
+			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, check_mehtablock), "FB");
+			c.eval(solve);
+			std::cout << solve;
+		}
+
+		//-------
+		// 2. 3QB
+		//-------
+		{
+			moveset ms;
+			for (auto p : c.turn)
+				if (p.first.is_one_of({ C::U, C::u, C::R, C::E }))
+					ms.push_back(p.first);
+			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, check_3qb), "EOLedge: 3QB");
+			c.eval(solve);
+			std::cout << solve;
+		}
+
+		//--------
+		// 3. EOLE
+		//--------
+		{
+			moveset ms;
+			for (auto p : c.turn)
+				if (p.first.is_one_of({ C::R, C::U, C::D, C::F, C::S }))
+					ms.push_back(p.first);
+			auto solve = flatten(IDDFS(c, UNKNOWN_MAX, ms, [&](Cube const& c) {
+				if (!check_mehtablock(c) || !check_3qb(c))
+					return false;
+				if (!util::eo_checker(c))
+					return false;
+				return c[2][1][2] == c[2][1][1] && c[3][1][0] == c[3][1][1];
+			}), "EOLedge: EOLE");
+			c.eval(solve);
+			std::cout << solve;
+		}
+
+		//-------
+		// 4. TDR
+		//-------
+		{
+			std::cout << alg::brute_force(c, alg::TDR, alg::TDRtest, "TDR");
+		}
+
+		//--------
+		// 5. ZBLL
+		//--------
+		{
+			auto pll = alg::brute_force(c, alg::PLL, alg::PLLtest, "PLL");
+			if (!pll.empty()) {
+				std::cout << pll;
+				return;
+			}
+			auto zbll = alg::brute_force(c, alg::ZBLL, alg::LLtest, "ZBLL");
+			if (!zbll.empty()) {
+				std::cout << zbll;
+				return;
+			}
+		}
+	}
 }
 
 void usage()
 {
-	std::cerr << "usage: cubeterm [-v]|[-i]|[-m CFOP|Roux|ZZ|Petrus|2GR][-o <file>] -s <scramble>|-r <random_length> [-t 1|0]\n";
+	std::cerr << "usage: cubeterm [-v]|[-i]|[-m CFOP|Roux|ZZ|Petrus|2GR|Mehta][-o <file>] -s <scramble>|-r <random_length> [-t 1|0]\n";
 	std::exit(EXIT_FAILURE);
 }
 
@@ -874,11 +956,17 @@ int main(int argc, char *argv[])
 		solve::Petrus(c);
 	else if (!strcasecmp(method, "2GR"))
 		solve::_2GR(c);
+	else if (!strcasecmp(method, "Mehta"))
+		solve::Mehta(c);
 	else
 		usage();
 
 	// Don't forget the AUF
 	std::cout << alg::brute_force(c, {"U", "U2", "U'"}, alg::LLtest, "AUF", false);
+	std::cout << alg::brute_force(c, {"D", "D2", "D'"}, [](Cube c) {
+		c.do_turn(Cube::TurnType::Enum::z2);
+		return alg::LLtest(c);
+	}, "ADF", false);
 
 	auto t2 = high_resolution_clock::now();
 	auto sec = duration<double>(t2-t1);
