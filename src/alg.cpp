@@ -99,7 +99,8 @@ namespace alg
 	{
 		if (goal(c))
 			return "";
-		auto AUF = auf ? std::set{"U", "U2", "U'", ""} : std::set{""};
+		std::set<std::string, WcComparator> AUF = {""};
+		if (auf) AUF = {"", "U", "U2", "U'"};
 		for (auto it : algset) {
 			for (auto pre : AUF) {
 				for (auto post : AUF) {
