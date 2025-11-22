@@ -27,6 +27,7 @@ Average solving time/movecount per method:
  - Petrus: (2x2x2, 2x2x3, EO, F2L, COLL, EPLL) ~6-10s     (~49ETM)
  - Roux:   (FB, SB, CMLL, LSE)                 ~10-40s    (~35ETM)
  - 2GR:    (EOPair, CPLine, Block, F2L, 2GLL)  ~10-30s    (~45ETM)
+ - Mehta:  (FB, 3QB, EOLE, TDR, ZBLL)          ~7-25s     (~46ETM)
 
 Command-line arguments:
 -----------------------

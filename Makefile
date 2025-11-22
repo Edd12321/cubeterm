@@ -1,6 +1,6 @@
-all: src/config.hpp
+bin/cubeterm: src/config.hpp src/main.cpp src/cube.cpp algs/*.txt
 	mkdir -p bin
-	${CXX} src/main.cpp -o bin/cubeterm -funroll-loops
+	${CXX} -std=c++11 -Wall -pedantic src/main.cpp -o bin/cubeterm -funroll-loops
 	strip bin/cubeterm
 
 src/config.hpp:

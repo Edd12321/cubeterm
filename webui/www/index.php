@@ -33,30 +33,20 @@ navbar();
 		<td><label for="method">Method: </label>
 		</td>
 		<td>
-			<div class="method-selector">
-				<img src="res/ZZ.png" />
-				<input type="radio" name="method" value="ZZ" class="" required checked="checked" />ZZ
-			</div>
-			<div class="method-selector">
-				<img src="res/CFOP.png" />
-				<input type="radio" name="method" value="CFOP" />CFOP
-			</div>
-			<div class="method-selector">
-				<img src="res/Roux.png" />
-				<input type="radio" name="method" value="Roux" />Roux
-			</div>
-			<div class="method-selector">
-				<img src="res/Petrus.png" />
-				<input type="radio" name="method" value="Petrus" />Petrus
-			</div>
-			<div class="method-selector">
-				<img src="res/2GR.png" />
-				<input type="radio" name="method" value="2GR" />2GR
-			</div>
-			<div class="method-selector">
-				<img src="res/Mehta.png" />
-				<input type="radio" name="method" value="Mehta" />Mehta
-			</div>
+<?php
+			$files = glob("res/*.png");
+			foreach ($files as $i => $path) {
+				$name = basename($path, ".png");
+				echo "\t\t<div class=\"method-selector\">
+			<img src=\"$path\" />
+			<input type=\"radio\" name=\"method\" value=\"$name\"";
+				if ($i + 1 == sizeof($files))
+					echo " required checked=\"checked\"";
+				echo " />$name\n\t\t</div>\n";
+				if ($i && $i % 3 == 0)
+					echo "\t\t<br />\n";
+			}
+?>
 		</td>
 	</tr>
 	<tr>

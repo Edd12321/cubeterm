@@ -1,10 +1,10 @@
-#!/usr/local/bin/zrc
+#!/usr/bin/zrc
 set algsets = {
-	ZBLLT ZBLLU ZBLLL ZBLLH ZBLLPi ZBLLS ZBLLAS
-	F2L AdvancedF2L OLL PLL
-	CMLL
-	COLL
-	TDR
+	ZBLLT ZBLLU ZBLLL ZBLLH ZBLLPi ZBLLS ZBLLAS # ZZ, 2GR
+	F2L AdvancedF2L OLL PLL # CFOP, ZZ, Petrus, 2GR
+	CMLL # Roux
+	COLL # Petrus
+	TDR # Mehta
 }
 
 fn deletable {
@@ -14,8 +14,7 @@ fn deletable {
 }
 
 foreach as $algsets {
-	rm -f -- $as.txt
-	timeout 9 curl https://speedcubedb.com/a/3x3/$as \
+	curl https://speedcubedb.com/a/3x3/$as \
 		| pup {li.list-group-item:first-of-type div.d-flex div text{}} \
 		| grep -v -e {^[[:blank:]]*$} \
 		| grep {^[^\:]*$} \

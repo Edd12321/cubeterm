@@ -4,7 +4,7 @@
 "R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R",
 "R2 U R' U R' U' R U' R2 D U' R' U R D'",
 "D R' U' R U D' R2 U R' U R U' R U' R2",
-"D R2 U' R U' R U R' U R2 D' U R U' R'",
+"R2 U' R U' R U R' U R2 D' U R U' R' D",
 "R U R' U' D R2 U' R U' R' U R' U R2 D'",
 "M2 U' M2 U2 M2 U' M2",
 "x R2 F R F' R U2 r' U r U2 x'",

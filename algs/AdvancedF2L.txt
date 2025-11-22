@@ -186,7 +186,7 @@
 "L' U L R' U2 R",
 "L' U L R' U2 R",
 "R' U R L' U2 L",
-"L' U L f' L f",
+"R U R' U' L' U L",
 "L' U L f' L f",
 "L R' U R L'",
 "S R S'",

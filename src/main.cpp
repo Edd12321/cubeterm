@@ -27,8 +27,7 @@ typedef std::vector<Cube::TurnType> moveset;
 typedef std::vector<Cube::TurnType> moves;
 typedef std::set<Cube::Facelet> corner;
 
-inline Cube::TurnType undo_move(Cube::TurnType turn)
-{
+inline Cube::TurnType undo_move(Cube::TurnType turn) {
 	if ((turn.value+1) % 3 == 0)
 		return turn;
 	if ((turn.value+1) % 3 == 2)
@@ -36,8 +35,7 @@ inline Cube::TurnType undo_move(Cube::TurnType turn)
 	return static_cast<Cube::TurnType::Enum>(turn.value+1);
 }
 
-std::string flatten(moves const& vec, std::string step_name = "", bool count = true)
-{
+std::string flatten(moves const& vec, std::string step_name = "", bool count = true) {
 	if (count)
 		last_etm += vec.size();
 	std::string res;
@@ -52,8 +50,7 @@ std::string flatten(moves const& vec, std::string step_name = "", bool count = t
 	return ret;
 }
 
-std::string flatten(std::string str, std::string step_name = "", bool count = false)
-{
+std::string flatten(std::string str, std::string step_name = "", bool count = false) {
 	std::stringstream ss{str};
 	moves vec;
 	while (ss >> str)
@@ -61,8 +58,7 @@ std::string flatten(std::string str, std::string step_name = "", bool count = fa
 	return flatten(vec, step_name, count);
 }
 
-int wc(std::string str)
-{
+int wc(std::string str) {
 	std::stringstream ss{str};
 	int count = 0;
 	while (ss >> str)
@@ -77,8 +73,7 @@ std::mutex mut;
 static inline void DLS(Cube& c, int depth, moveset const& ms, state_condition const& goal,
 		moves& curr,
 		moves& solution,
-		std::atomic<bool>& alarm)
-{
+		std::atomic<bool>& alarm) {
 	if (depth < 0)
 		return;
 	if (goal(c)) {
@@ -105,12 +100,12 @@ static inline void DLS(Cube& c, int depth, moveset const& ms, state_condition co
 	}
 }
 
-static inline moves IDDFS(Cube& c, int max_depth, moveset const& ms, state_condition const& goal, bool thread = use_multithreading)
-{
+static inline moves IDDFS(Cube& c, int max_depth, moveset const& ms, state_condition const& goal, bool thread = use_multithreading) {
 	if (goal(c))
 		return {};
 
-	std::atomic<bool> found_solution = false;
+	std::atomic<bool> found_solution;
+	found_solution.store(false);
 	moves last_step_solution = {};
 
 	// Classic IDDFS
@@ -147,8 +142,7 @@ static inline moves IDDFS(Cube& c, int max_depth, moveset const& ms, state_condi
 	return last_step_solution;
 }
 
-namespace util
-{
+namespace util {
 	using C = Cube::TurnType::Enum;
 	/*********************************
 	 *                               *
@@ -156,8 +150,7 @@ namespace util
 	 *                               *
 	 *********************************/
 	
-	bool eo_checker(Cube const& c)
-	{
+	bool eo_checker(Cube const& c) {
 		static auto is_col = [](std::vector<Cube::Facelet> const& f, Cube::Facelet fl1, Cube::Facelet fl2) {
 			for (auto it : f)
 				if (it == fl1 || it == fl2)
@@ -181,8 +174,7 @@ namespace util
 		return true;
 	};
 
-	bool check_rouxblock(Cube const& c)
-	{
+	bool check_rouxblock(Cube const& c) {
 		if (c[2][1][0] != c[2][2][0] || c[4][1][2] != c[4][2][2])
 			return false;
 		for (int i = 0; i < 3; ++i)
@@ -195,8 +187,7 @@ namespace util
 		return true;
 	}
 
-	std::string solve_right_block (Cube& c, std::string const& step_name)
-	{
+	std::string solve_right_block (Cube& c, std::string const& step_name) {
 		moveset ms;
 		for (auto p : c.turn)
 			if (p.first.is_one_of({ C::R, C::U }))
@@ -216,14 +207,12 @@ namespace util
 		}), step_name);
 	};
 
-	static inline bool block_2x2x2(Cube const& c)
-	{
+	static inline bool block_2x2x2(Cube const& c) {
 		return c[1][1][0] == c[1][1][1] && c[1][2][0] == c[1][1][1] && c[1][2][1] == c[1][1][1]
 		    && c[4][1][2] == c[4][1][1] && c[4][2][2] == c[4][1][1] && c[4][2][1] == c[4][1][1]
 		    && c[5][1][0] == c[5][1][1] && c[5][2][0] == c[5][1][1] && c[5][2][1] == c[5][1][1];
 	};	
-	static inline bool block_2x2x1(Cube const& c)
-	{
+	static inline bool block_2x2x1(Cube const& c) {
 		return c[3][1][2] == c[3][1][1] && c[3][2][2] == c[3][1][1] && c[3][2][1] == c[3][1][1]
 		    && c[4][1][0] == c[4][1][1] && c[4][2][0] == c[4][1][1]
 		    && c[5][2][2] == c[5][1][1] && c[5][1][2] == c[5][1][1];
@@ -231,16 +220,14 @@ namespace util
 }
 
 
-namespace solve
-{
+namespace solve {
 	using C = Cube::TurnType::Enum;
 	/**************************
 	 *                        *
 	 * Method implementations *
 	 *                        *
 	 **************************/
-	static inline void CFOP(Cube& c)
-	{
+	static inline void CFOP(Cube& c) {
 		//---------
 		// 1. Cross
 		//---------
@@ -300,8 +287,7 @@ namespace solve
 		}
 	}
 
-	static inline void Roux(Cube& c)
-	{
+	static inline void Roux(Cube& c) {
 		//------
 		// 1. FB
 		//------
@@ -382,8 +368,7 @@ namespace solve
 		}
 	}
 
-	static inline void ZZ(Cube& c)
-	{
+	static inline void ZZ(Cube& c) {
 		//----------
 		// 1. EOLine
 		//----------
@@ -448,8 +433,7 @@ namespace solve
 		}
 	}
 
-	static inline void Petrus(Cube& c)
-	{
+	static inline void Petrus(Cube& c) {
 		//---------------
 		// 1. 2x2x2 (DBL)
 		//---------------
@@ -514,8 +498,7 @@ namespace solve
 		}
 	}
 
-	static inline void _2GR(Cube& c)
-	{
+	static inline void _2GR(Cube& c) {
 		auto eopair = [](Cube const& c) {
 			return c[1][2][0] == c[1][1][1] && c[1][2][1] == c[1][1][1]
 			&&     c[5][2][0] == c[5][1][1] && c[5][1][0] == c[5][1][1]
@@ -632,8 +615,7 @@ namespace solve
 		}	
 	}
 
-	static inline void Mehta(Cube& c)
-	{
+	static inline void Mehta(Cube& c) {
 		auto check_mehtablock = [&](Cube c) {
 			c.do_turn(C::zp);
 			c.do_turn(C::y2);
@@ -715,14 +697,12 @@ namespace solve
 	}
 }
 
-void usage()
-{
+void usage() {
 	std::cerr << "usage: cubeterm [-v]|[-i]|[-m CFOP|Roux|ZZ|Petrus|2GR|Mehta][-o <file>] -s <scramble>|-r <random_length> [-t 1|0]\n";
 	std::exit(EXIT_FAILURE);
 }
 
-std::string randscram(int len)
-{
+std::string randscram(int len) {
 	// Generates a random scramble.
 	std::srand(std::time(NULL));
 	std::string s;
@@ -741,18 +721,15 @@ std::string randscram(int len)
 /* Simulator :) */
 volatile sig_atomic_t cont;
 
-static inline void handle_int(int x)
-{
+static inline void handle_int(int x) {
 	cont = 1;
 }
 
-class RawInputMode
-{
+class RawInputMode {
 private:
 	struct termios term, old;
 public:
-	RawInputMode()
-	{
+	RawInputMode() {
 		tcgetattr(STDIN_FILENO, &term);
 		old = term;
 		term.c_lflag &= ~ICANON;
@@ -760,15 +737,13 @@ public:
 		tcsetattr(STDIN_FILENO, TCSANOW, &term);
 	}
 
-	~RawInputMode()
-	{
+	~RawInputMode() {
 		tcsetattr(STDIN_FILENO, TCSANOW, &old);
 		std::cout << "\033[?25h";
 	}
 };
 
-void sim(Cube& c)
-{
+void sim(Cube& c) {
 	std::string keyboard = "\n1234567890-=!@#$%^&*()_+\n"
 	                       "qwertyuiop[]{}\n"
 	                       "asdfghjkl;':\"\n"
@@ -797,8 +772,7 @@ void sim(Cube& c)
 	return;
 }
 
-void int_input(Cube& c)
-{
+void int_input(Cube& c) {
 	RawInputMode rim;
 	char ch;
 	signal(SIGINT, handle_int);
@@ -890,8 +864,7 @@ void int_input(Cube& c)
 	}
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	int opt;
 	std::string scram;
 	const char *method = default_method;
@@ -914,8 +887,7 @@ int main(int argc, char *argv[])
 		case 'v':
 			vc = true;
 			break;
-		case 'o':
-			{
+		case 'o': {
 				int fd = open(optarg, O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR);
 				if (fd < 0) {
 					perror(optarg);

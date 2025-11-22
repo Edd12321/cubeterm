@@ -8,16 +8,14 @@
 #include <cstdint>
 #include <cstring>
 
-class Cube
-{
+class Cube {
 public:
 	
 	enum Facelet : std::int_fast8_t { WHITE, ORANGE, GREEN, RED, BLUE, YELLOW };
 	enum Side    : std::int_fast8_t { U, L, F, R, B, D };
 
 	/* Store moves as one byte each */
-	class TurnType
-	{
+	class TurnType {
 	public:
 		enum Enum : std::int_fast8_t {
 			R, Rp, R2, L, Lp, L2, U, Up, U2, D, Dp, D2, F, Fp, F2, B, Bp, B2,
@@ -25,8 +23,7 @@ public:
 			M, Mp, M2, S, Sp, S2, E, Ep, E2,
 			x, xp, x2, y, yp, y2, z, zp, z2
 		} value;
-		bool is_one_of(std::vector<Enum> const& turns) const
-		{
+		bool is_one_of(std::vector<Enum> const& turns) const {
 			for (auto it : turns)
 				if (value-it >= 0 && value-it <= 2)
 					return true;
@@ -39,8 +36,7 @@ public:
 		inline bool operator>(const TurnType& t) const { return value > t.value; }
 		inline bool operator<(const TurnType& t) const { return value < t.value; }
 
-		inline bool opposite(TurnType const& t2) const
-		{
+		inline bool opposite(TurnType const& t2) const {
 			auto T1 = overall_type(), T2 = t2.overall_type();
 			if (T1 > T2)
 				std::swap(T1, T2);
@@ -48,8 +44,7 @@ public:
 			    || (T1 == R && T2 == r) || (T1 == R && T2 == M) || (T1 == r && T2 == M); // Roux
 		}
 
-		operator std::string() const
-		{
+		operator std::string() const {
 #define T2STR(X) { X, #X }, { X##p, #X "'" }, { X##2, #X "2" },
 			static std::map<Enum, std::string> turn2str = {
 				T2STR(R) T2STR(L) T2STR(U) T2STR(D) T2STR(F) T2STR(B)
@@ -60,12 +55,10 @@ public:
 			return turn2str[value];
 		}
 		template<typename T>
-		inline TurnType(T const& t)
-		{
+		inline TurnType(T const& t) {
 			this->value = static_cast<Enum>(t);
 		}
-		TurnType(std::string const& str)
-		{
+		TurnType(std::string const& str) {
 #define STR2T(X) { #X, X }, { #X "'", X##p }, { #X "2", X##2 },
 			static std::map<std::string, Enum> str2turn = {
 				STR2T(R) STR2T(L) STR2T(U) STR2T(D) STR2T(F) STR2T(B)
@@ -107,13 +100,11 @@ public:
 	Cube();
 	~Cube();
 
-	inline Face const& operator[](int face) const
-	{
+	inline Face const& operator[](int face) const {
 		return mat[face];
 	}
 
-	inline void setcol(int face, int mark_x, int mark_y, char col)
-	{
+	inline void setcol(int face, int mark_x, int mark_y, char col) {
 		static const char *cols = "WOGRBY";
 		const char *find = std::strchr(cols, col);
 		if (find) {
@@ -122,8 +113,7 @@ public:
 		}
 	}
 
-	inline void mark(int face, int mark_x, int mark_y)
-	{
+	inline void mark(int face, int mark_x, int mark_y) {
 		this->face = face;
 		this->mark_x = mark_x;
 		this->mark_y = mark_y;
@@ -208,22 +198,18 @@ public:
 	};
 };
 
-Cube::Cube()
-{
+Cube::Cube() {
 	for (int i = 0; i < 6; ++i)
 		for (int j = 0; j < 3; ++j)
 			for (int k = 0; k < 3; ++k)
 				mat[i][j][k] = static_cast<Facelet>(i);
 }
 
-Cube::~Cube()
-{
+Cube::~Cube() {
 }
 
-std::ostream& operator<<(std::ostream& out, const Cube& c)
-{
-	auto helper = [&](int k, int i, int j)
-	{
+std::ostream& operator<<(std::ostream& out, const Cube& c) {
+	auto helper = [&](int k, int i, int j) {
 		out << c.ansicol[c.mat[k][i][j]] << (c.face == k && c.mark_x == i && c.mark_y == j ? "[]" : "  ") << c.reset_ansi;
 	};
 	for (int i = 0; i < 3; ++i, out << '\n') {
@@ -247,8 +233,7 @@ std::ostream& operator<<(std::ostream& out, const Cube& c)
  - Rotate 90deg clockwise
  - Rotate 90deg anticlockwise
  - Rotate 180deg */
-inline void Cube::rot90cw(Cube::Face& A)
-{
+inline void Cube::rot90cw(Cube::Face& A) {
 	for (int j = 0; j < 2; ++j) {
 		auto elem = A[0][j];
 		A[0][j] = A[2-j][0];
@@ -258,8 +243,7 @@ inline void Cube::rot90cw(Cube::Face& A)
 	}
 };
 
-inline void Cube::rot90acw(Cube::Face& A)
-{
+inline void Cube::rot90acw(Cube::Face& A) {
 	for (int j = 0; j < 2; ++j) {
 		auto elem = A[0][j];
 		A[0][j] = A[j][2];
@@ -269,22 +253,19 @@ inline void Cube::rot90acw(Cube::Face& A)
 	}
 }
 
-inline void Cube::rot180(Cube::Face& A)
-{
+inline void Cube::rot180(Cube::Face& A) {
 	std::swap(A[0][0], A[2][2]);
 	std::swap(A[0][2], A[2][0]);
 	std::swap(A[0][1], A[2][1]);
 	std::swap(A[1][0], A[1][2]);
 }
 
-inline void Cube::do_turn(Cube::TurnType const& t)
-{
+inline void Cube::do_turn(Cube::TurnType const& t) {
 	(this->*(turn[t]))();
 }
 
 /* Evaluate a standard cube notation sequence. */
-int Cube::eval(std::string const& sv)
-{	
+int Cube::eval(std::string const& sv) {	
 	std::stringstream ss{sv};
 	std::string tmp;
 	int turns{};
@@ -303,8 +284,7 @@ int Cube::eval(std::string const& sv)
 	return turns;
 }
 
-int Cube::eval(std::vector<TurnType> const& m)
-{
+int Cube::eval(std::vector<TurnType> const& m) {
 	for (auto const& it : m)
 		do_turn(it);
 	return m.size();

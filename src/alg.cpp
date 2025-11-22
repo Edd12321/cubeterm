@@ -4,11 +4,9 @@
 #include <vector>
 #include <utility>
 #include <functional>
-namespace alg
-{
+namespace alg {
 	struct WcComparator {
-		inline bool operator()(std::string const& lhs, std::string const& rhs) const
-		{
+		inline bool operator()(std::string const& lhs, std::string const& rhs) const {
 			auto wc_l = wc(lhs);
 			auto wc_r = wc(rhs);
 			if (wc_l == wc_r)
@@ -95,8 +93,7 @@ namespace alg
 		return count;
 	};
 
-	std::string brute_force(Cube& c, std::set<std::string> const& algset, state_condition const& goal, std::string const& step_name, bool auf = true)
-	{
+	std::string brute_force(Cube& c, std::set<std::string> const& algset, state_condition const& goal, std::string const& step_name, bool auf = true) {
 		if (goal(c))
 			return "";
 		std::set<std::string, WcComparator> AUF = {""};
@@ -121,8 +118,7 @@ namespace alg
 		return "";
 	}
 
-	inline std::string brute_force_f2l(Cube c)
-	{
+	inline std::string brute_force_f2l(Cube c) {
 		static std::set<std::string> AUF = { " ", "U ", "U' ", "U2 " };
 		static std::set<std::string> ADF = { " ", "D ", "D' ", "D2 " };
 		static std::set<std::string> rotations = { " ", "y ", "y' "/*, "y2 " nah */ };
